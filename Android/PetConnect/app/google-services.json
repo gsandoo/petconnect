@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1078274740333",
+    "project_id": "pet-connect-cdc02",
+    "storage_bucket": "pet-connect-cdc02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078274740333:android:d9c3fb9f85fdca07b66f64",
+        "android_client_info": {
+          "package_name": "com.haneum.petconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1078274740333-97ftgfslbtd6n3p7m40mdasfn591lano.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7NGimHhyicnxrW_dFG89ddMs0s6ua4Zk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1078274740333-97ftgfslbtd6n3p7m40mdasfn591lano.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
