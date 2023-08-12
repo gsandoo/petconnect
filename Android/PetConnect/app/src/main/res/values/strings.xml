@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Pet Connect</string>
+    <string name="input_email">이메일을 입력하세요</string>
+    <string name="input_pwd">비밀번호를 입력하세요</string>
 </resources>
