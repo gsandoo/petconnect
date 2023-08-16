@@ -1,4 +1,4 @@
-package com.haneum.petconnect
+package com.haneum.petconnect.data
 
 data class UserAccount(
     val idToken: String,  // 고유정보
