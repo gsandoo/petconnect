@@ -191,3 +191,31 @@ pip-selfcheck.json
 pet-connect-my-key.pem
 pet-connect-my-key.ppk
 
+#Dog-Data
+0
+1
+2
+3
+4
+5
+6
+7
+
+# test  
+6.jpg
+car.png
+pedestrian.png
+test_0.jpg
+test_1.jpg
+test_2.jpg
+test_3.jpg
+test_4.jpg
+test_5.jpg
+test_6.jpg
+test_7.jpg
+test_8.jpg
+truck.png
+
+#SVM-Classifier/testimage
+testimage
+car
