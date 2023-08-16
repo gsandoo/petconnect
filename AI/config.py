@@ -1,28 +1,5 @@
-from dotenv import load_dotenv
+#ORM적용하기 위한 설정파일
 import os
-
-# .env 파일 auto load
-load_dotenv()
-
-class Config(object):
-    TESTING = False
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"mysql://{os.getenv('DB_USER')}:" \
-                              f"{os.getenv('DB_PWD')}@" \
-                              f"{os.getenv('DB_HOST')}:" \
-                              f"{os.getenv('DB_PORT')}/" \
-                              f"{os.getenv('DB_NAME')}?charset=utf8"
-
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = f"mysql://{os.getenv('DB_USER')}:" \
-                              f"{os.getenv('DB_PWD')}@" \
-                              f"{os.getenv('DB_HOST')}:" \
-                              f"{os.getenv('DB_PORT')}/" \
-                              f"{os.getenv('DB_NAME')}?charset=utf8"
-
-class TestingConfig(Config):
-    TESTING = True
+BASE_DIR=os.path.dirname(__file__)
+SQLALCHEMY_DATABASE_URI = 'mysql://root:Qwer12345678!/pet_connect'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
