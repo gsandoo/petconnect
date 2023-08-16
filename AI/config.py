@@ -1,9 +1,5 @@
-db = {
-    'user'     : 'root',
-    'password' : '[Qwer12345678!]',
-    'host'     : '127.0.0.1',
-    'port'     : '3306',
-    'database' : 'pet_connect'
-}
-
-DB_URL = f"mysql+mysqlconnector://{db['user']}:{db['password']}@{db['host']}:{db['port']}/{db['database']}?charset=utf8"
+#ORM적용하기 위한 설정파일
+import os
+BASE_DIR=os.path.dirname(__file__)
+SQLALCHEMY_DATABASE_URI = 'mysql://root:Qwer12345678!/pet_connect'
+SQLALCHEMY_TRACK_MODIFICATIONS = False

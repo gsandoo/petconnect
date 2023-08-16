@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./AI/nose",
+        "./AI/nose/service"
+    ]
+}
