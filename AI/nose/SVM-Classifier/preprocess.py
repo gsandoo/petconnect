@@ -11,7 +11,13 @@ parser.add_argument('--dir', default='7',help='dataset directory')
 parser.add_argument('--savedir', default='./Dog-Data/train',help='save directory')
 opt = parser.parse_args()
 
-os_path = 'C:/Users/roger/OneDrive/바탕 화면/pet-connect/AI/nose/SVM-Classifier'
+
+#get_path
+def get_path(path):
+    change_path = path.replace("\\",'/')
+    return change_path
+
+os_path = get_path(os.getcwd() + '/AI/nose/SVM-Classifier')
 os.chdir(os_path)
 
 path =  './image/' + opt.dir
