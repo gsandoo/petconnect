@@ -8,6 +8,10 @@ import subprocess
 import pymysql
 
 
+#path
+def get_path(path):
+    change_path = path.replace("\\",'/')
+    return change_path
 
 bp= Blueprint('main',__name__,url_prefix='/')
 @bp.route('/register', methods=['GET', 'POST'])
@@ -41,13 +45,18 @@ def register():
 
 
     try:
-        print("try 문 시작")
+        print("--- start ---")
+        path = '../nose/SVM-Classifier'
+        classify_path = get_path(os.path.abspath(path))
+        print(classify_path)
+        os.chdir(classify_path)
+        createFolder(classify_path+'/testimage/%s' % (formoment1))
+        forlookup.save(classify_path+'/testimage/%s/%s.jpg' % (formoment1, formoment1))
         # 5장 중 1장만 ml코드 돌리기
         result = getSVMResultForRegister(formoment1)
-        print("37 ...여기까지만 와라2  " + result)
+        print("result=  " + result)
         compare = result.split(',')
-        print("여기까지만 와라3")
-        print(compare)
+        print("compare = " + compare)
         if compare == ['']:
             raise Exception('error')
     except Exception as e:
@@ -364,15 +373,13 @@ def getSVMResult(formomentLookup):
     os.chdir('../')
     return data
 
-def getSVMResultForRegister(formoment):
-    path = 'C:/Users/roger/OneDrive/바탕 화면/pet-connect/AI/nose/SVM-Classifier'
-    os.chdir(path)
-    cmd =['python','Classifier.py','--test','%s' %(formoment+'.jpg')]
+def getSVMResultForRegister(formoment):    
+    cmd =['python','Classifier.py','--test','%s' %(formoment)]
     fd_popen = subprocess.Popen(cmd, stdout=subprocess.PIPE,encoding='utf8').stdout
     data = fd_popen.read().strip()
+    print(" data 는 = " +data)
     fd_popen.close()
     os.chdir('../')
-    print(" data 는 = " +data)
     return data
 
 
