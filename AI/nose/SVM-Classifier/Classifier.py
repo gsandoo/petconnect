@@ -16,16 +16,23 @@ from histo_clahe import histo_clahe
 parser = argparse.ArgumentParser(description='Argparse Tutorial')
 parser.add_argument('--dir', default='Dog-Data',help='dataset directory')
 parser.add_argument('--test', default='test_0.jpg',help='test image data')
-parser.add_argument('--option',default='test',help='test or register')
+parser.add_argument('--option',default='register',help='test or register')
 opt = parser.parse_args()
 
-#path
+
+
+#get_path
 def get_path(path):
     change_path = path.replace("\\",'/')
     return change_path
 
-train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
-dog_data_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data")
+# test path
+# train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
+# dog_data_path = get_path(os.getcwd()+"AI/nose/SVM-Classifier/Dog-Data")
+
+# register path
+train_path = get_path(os.getcwd()+"/Dog-Data/train")
+dog_data_path = get_path(os.getcwd()+"/Dog-Data")
 
 
 #read data
@@ -128,8 +135,12 @@ def main():
     if opt.option == 'test':
         img_test = histo_clahe(dog_data_path + '/test/' + opt.test)
     elif opt.option == 'register':
-        img_test = histo_clahe(dog_data_path +'/'+ opt.test)
+        path = os.getcwd()+'/testimage'
+        path_encoded = path.encode('utf-8').decode('cp949')
+        register_path = get_path(path_encoded)
+        img_test = histo_clahe(register_path + '/'+ opt.test + '/' + opt.test+'.jpg'  )
     img = [img_test]
+    
     img_sift_feature = extract_sift_features(img)
     img_bow_feature = create_features_bow(img_sift_feature, BoW, num_clusters)
 
@@ -180,5 +191,6 @@ def main():
     # print("running time: ", round(time.time() - start, 2))
 
     print(result)
+    return result
 if __name__ == "__main__":
     main()
