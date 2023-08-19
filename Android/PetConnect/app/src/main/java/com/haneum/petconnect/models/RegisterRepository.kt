@@ -12,13 +12,13 @@ class RegisterRepository(context: Context): RegisterDataSource {
         email: String,
         pw: String
     ) {
-        registerUser(callback,email,pw)
+        registerDataSource.registerUser(callback,email,pw)
     }
 
     override fun updateData(
         callback: RegisterDataSource.UpdateDataCallback,
         user: UserAccount
     ) {
-        updateData(callback,user)
+        registerDataSource.updateData(callback,user)
     }
 }
