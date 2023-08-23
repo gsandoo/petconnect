@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'com.google.relay' version '0.3.08'
 }
 
 android {
@@ -28,8 +29,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
-        compose true
         viewBinding true
+        compose true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"

@@ -1,11 +1,14 @@
 package com.haneum.petconnect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import com.haneum.petconnect.fragment.CommunityFragment
 import com.haneum.petconnect.fragment.HealthFragment
 import com.haneum.petconnect.fragment.HomeFragment
@@ -20,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var communityFragment: CommunityFragment
     lateinit var healthFragment: HealthFragment
     lateinit var profileFragment: ProfileFragment
+    lateinit var auth:FirebaseAuth
+    lateinit var myIntent:Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +34,17 @@ class MainActivity : AppCompatActivity() {
         communityFragment = CommunityFragment()
         healthFragment = HealthFragment()
         profileFragment = ProfileFragment()
+        myIntent = intent
+
+
+//        var userInfo = myIntent.getStringArrayExtra("userInfo")
+//        FirebaseAuth.getInstance().signInWithEmailAndPassword(userInfo?.get(0)!!, userInfo[1]!!).addOnCompleteListener{
+//            if(it.isSuccessful){
+//
+//            }else{
+//
+//            }
+//        }
 
         //기본 프라그먼트를 홈으로 설정
         supportFragmentManager.beginTransaction()

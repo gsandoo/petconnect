@@ -36,6 +36,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
 
     override fun goMain(user: FirebaseUser) {
         val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(
+            "userInfo",
+            arrayOf(binding.etEmail.text.toString(),binding.etPwd.text.toString())
+        )
         startActivity(intent)
         finish()
     }
