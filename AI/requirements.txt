@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 alabaster @ file:///home/ktietz/src/ci/alabaster_1611921544520/work
 alembic==1.11.3
 anaconda-client==1.12.0
@@ -195,3 +196,29 @@ wrapt @ file:///Users/builder/miniconda3/envs/prefect/conda-bld/wrapt_1638434394
 yapf @ file:///tmp/build/80754af9/yapf_1615749224965/work
 zipp @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_8cv5zqoqed/croot/zipp_1672387131277/work
 zstandard @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_41b3vxtask/croot/zstandard_1677013668452/work
+=======
+alembic==1.11.2
+click==8.1.6
+colorama==0.4.6
+Flask==2.2.5
+Flask-Migrate==4.0.4
+flask-sqlalchemy==3.0.5
+greenlet==2.0.2
+importlib-metadata==6.7.0
+importlib-resources==5.12.0
+itsdangerous==2.1.2
+Jinja2==3.1.2
+joblib==1.3.1
+Mako==1.2.4
+MarkupSafe==2.1.3
+numpy==1.21.6
+Pillow==9.5.0
+PyMySQL==1.1.0
+scikit-learn==1.0.2
+scipy==1.7.3
+SQLAlchemy==2.0.19
+threadpoolctl==3.1.0
+typing-extensions==4.7.1
+Werkzeug==2.2.3
+zipp==3.15.0
+>>>>>>> 91fbd34a85fbb47a93c87d0c3696967cfacc2991
