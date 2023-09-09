@@ -7,10 +7,9 @@ from PIL import Image
 from histo_clahe import histo_clahe
 
 parser = argparse.ArgumentParser(description='Argparse Tutorial')
-parser.add_argument('--dir', default='5',help='dataset directory')
+parser.add_argument('--dir', default='2',help='dataset directory')
 parser.add_argument('--savedir', default='./Dog-Data/train',help='save directory')
 opt = parser.parse_args()
-
 
 #get_path
 def get_path(path):
@@ -18,7 +17,7 @@ def get_path(path):
     return change_path
 
 # 학습 경로
-# os_path = get_path(os.getcwd() + '/AI/nose/SVM-Classifier')
+# os_path = get_path(os.getcwd())
 # os.chdir(os_path)
 # path =  './image/' + opt.dir
 
@@ -28,7 +27,6 @@ path =  './rawimage/' + opt.dir
 
 
 file_list = os.listdir(path)
-
 rotate = [0, 15, 30, 45, -15, -30 , -45 ]
 
 def createFolder(directory):

@@ -1,5 +1,6 @@
 package com.haneum.petconnect
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -28,12 +29,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +47,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.haneum.petconnect.service.NoseRegisterApi
 import com.haneum.petconnect.service.NoseRegisterRes
+import com.haneum.petconnect.service.RegisterDto
 import com.haneum.petconnect.service.RetrofitSetting
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -54,14 +62,22 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
+import javax.annotation.Nullable
 
 class DogRegisterActivity : ComponentActivity() {
-    lateinit var images: Array<File>
+    private lateinit var images: Array<File?>
     private lateinit var cbActivityResultLauncher: ActivityResultLauncher<Intent>
-    var isConfirm = arrayOfNulls<Boolean>(5)
+    private val dataMap: HashMap<String, RequestBody> = HashMap()
+    lateinit var auth: FirebaseAuth
+    lateinit var user: FirebaseUser
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        isConfirm.fill(false)
+        auth = FirebaseAuth.getInstance()
+        user = auth?.currentUser!!
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme() {
@@ -71,55 +87,77 @@ class DogRegisterActivity : ComponentActivity() {
                     modifier = Modifier,
                     navController = navController,
                     getImage = { getImage() },
-                    isConfirm = remember {mutableStateOf(isConfirm)}
+                    onNameChange = {name -> dataMap["dogName"] = RequestBody.create(MediaType.parse("text/plain"),name)}
                 )
             }
         }
 
         val retrofit = RetrofitSetting.getInstance()
         val service = retrofit.create(NoseRegisterApi::class.java)
+        images = arrayOfNulls<File>(5)
 
         cbActivityResultLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()){
             if(it.resultCode == RESULT_OK) {
-                if (it.data?.clipData != null) { // 사진 여러개 선택한 경우
-                    val count = it.data?.clipData!!.itemCount
+                val data = it.data?.clipData
+                if (data != null) { // 사진 여러개 선택한 경우
+                    val count = data!!.itemCount
                     if (count != 5) {
-                        Toast.makeText(this, "사진을 5장 선택해주세요", Toast.LENGTH_LONG)
+                        Toast.makeText(this, "사진을 5장 선택해주세요", Toast.LENGTH_LONG).show()
                     } else {
                         for (i in 0 until count) {
-                            val imageUri = it.data?.clipData!!.getItemAt(i).uri
-                            images[i] = File(absolutelyPath(imageUri,this))
+                            val imageUri = data!!.getItemAt(i).uri
+                            images[i] = File(absolutelyPath(this,imageUri))
                         }
+                        noseRegister(images, service)
                     }
                 }else {
-                    Toast.makeText(this, "사진을 5장 선택해주세요", Toast.LENGTH_LONG)
+                    Toast.makeText(this, "사진을 5장 선택해주세요", Toast.LENGTH_LONG).show()
                 }
-                //noseRegister(images, service)
             }
-            isConfirm[0] = true
         }
     }
 
     fun getImage(){
         var intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
         intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.action = Intent.ACTION_GET_CONTENT
         cbActivityResultLauncher.launch(intent)
     }
 
-    fun absolutelyPath(path: Uri?, context : Context): String {
-        var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-        var c: Cursor? = context.contentResolver.query(path!!, proj, null, null, null)
-        var index = c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        c?.moveToFirst()
+    fun isConfirm(){
 
-        var result = c?.getString(index!!)
-
-        return result!!
     }
 
-    private fun noseRegister(imageFiles: Array<File>, service: NoseRegisterApi){
+    @Nullable
+    fun absolutelyPath(context: Context, uri: Uri): String? {
+        val contentResolver: ContentResolver = context.contentResolver ?: return null
+
+        // 파일 경로를 만듬
+        val filePath: String = (context.applicationInfo.dataDir + File.separator
+                + System.currentTimeMillis())
+        val file = File(filePath)
+        try {
+            // 매개변수로 받은 uri 를 통해  이미지에 필요한 데이터를 불러 들인다.
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            // 이미지 데이터를 다시 내보내면서 file 객체에  만들었던 경로를 이용한다.
+            val outputStream: OutputStream = FileOutputStream(file)
+            val buf = ByteArray(1024)
+            var len: Int
+            while (inputStream.read(buf).also { len = it } > 0) outputStream.write(buf, 0, len)
+            outputStream.close()
+            inputStream.close()
+        } catch (ignore: IOException) {
+            return null
+        }
+        return file.absolutePath
+    }
+
+    private fun noseRegister(imageFiles: Array<File?>, service: NoseRegisterApi){
+        val db = Firebase.firestore
+        val dataMap: HashMap<String, RequestBody> = HashMap()
+
         val dogProfile = RequestBody.create(MediaType.parse("image/*"), imageFiles[0])
         val dogNose1 = RequestBody.create(MediaType.parse("image/*"), imageFiles[0])
         val dogNose2 = RequestBody.create(MediaType.parse("image/*"), imageFiles[1])
@@ -127,31 +165,45 @@ class DogRegisterActivity : ComponentActivity() {
         val dogNose4 = RequestBody.create(MediaType.parse("image/*"), imageFiles[3])
         val dogNose5 = RequestBody.create(MediaType.parse("image/*"), imageFiles[4])
 
-        val dataMap: HashMap<String, RequestBody> = HashMap()
-        dataMap["registrant"] = RequestBody.create(MediaType.parse("text/plain"),"jihwan")
-        dataMap["phoneNum"] = RequestBody.create(MediaType.parse("text/plain"),"01012341234")
-        dataMap["email"] = RequestBody.create(MediaType.parse("text/plain"),"wlghks@naver.com")
-        dataMap["dogName"] = RequestBody.create(MediaType.parse("text/plain"),"jeon")
+        db.collection("users")
+            .whereEqualTo("user_id", user.uid)
+            .get()
+            .addOnSuccessListener {documents ->
+                for( doc in documents){
+                    dataMap["registrant"] = RequestBody.create(MediaType.parse("text/plain"),doc.data["name"].toString())
+                    dataMap["phoneNum"] = RequestBody.create(MediaType.parse("text/plain"),doc.data["phone"].toString())
+                }
+            }
+
+        dataMap["email"] = RequestBody.create(MediaType.parse("text/plain"),user.email)
         dataMap["dogBreed"] = RequestBody.create(MediaType.parse("text/plain"),"free")
         dataMap["dogBirthYear"] = RequestBody.create(MediaType.parse("text/plain"),"2020")
         dataMap["dogSex"] = RequestBody.create(MediaType.parse("text/plain"),"male")
 
         val imageMap: HashMap<String, MultipartBody.Part> = HashMap()
         imageMap["dogProfile"] =
-            MultipartBody.Part.createFormData("dogProfile", imageFiles[0].name, dogProfile)
+            MultipartBody.Part.createFormData("dogProfile", imageFiles[0]!!.name, dogProfile)
         imageMap["dogNose1"] =
-            MultipartBody.Part.createFormData("dogNose1", imageFiles[0].name, dogNose1)
+            MultipartBody.Part.createFormData("dogNose1", imageFiles[0]!!.name, dogNose1)
         imageMap["dogNose2"] =
-            MultipartBody.Part.createFormData("dogNose2", imageFiles[1].name, dogNose2)
+            MultipartBody.Part.createFormData("dogNose2", imageFiles[1]!!.name, dogNose2)
         imageMap["dogNose3"] =
-            MultipartBody.Part.createFormData("dogNose3", imageFiles[2].name, dogNose3)
+            MultipartBody.Part.createFormData("dogNose3", imageFiles[2]!!.name, dogNose3)
         imageMap["dogNose4"] =
-            MultipartBody.Part.createFormData("dogNose4", imageFiles[3].name, dogNose4)
+            MultipartBody.Part.createFormData("dogNose4", imageFiles[3]!!.name, dogNose4)
         imageMap["dogNose5"] =
-            MultipartBody.Part.createFormData("dogNose5", imageFiles[4].name, dogNose5)
+            MultipartBody.Part.createFormData("dogNose5", imageFiles[4]!!.name, dogNose5)
 
 
-        service.postNoseRegister(dataMap, imageMap)?.enqueue(object : Callback<NoseRegisterRes> {
+        service.postNoseRegister(
+            dataMap,
+            imageMap["dogProfile"]!!,
+            imageMap["dogNose1"]!!,
+            imageMap["dogNose2"]!!,
+            imageMap["dogNose3"]!!,
+            imageMap["dogNose4"]!!,
+            imageMap["dogNose5"]!!
+        )?.enqueue(object : Callback<NoseRegisterRes> {
             override fun onResponse(call: Call<NoseRegisterRes>, response: Response<NoseRegisterRes>) {
                 if(response.isSuccessful){
                     // 정상적으로 통신이 성고된 경우
@@ -173,15 +225,26 @@ class DogRegisterActivity : ComponentActivity() {
 }
 
 //각 화면 마다의 구성들
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectImageContent(
     modifier: Modifier,
-    getImage: () -> Unit
+    getImage: () -> Unit,
+    onNameChange: (String) -> Unit
 ){
-    Button(onClick = getImage) {
-        Text(text = "이미지 등록")
+    var nameState by remember {
+        mutableStateOf("")
     }
-    Text(text = "1")
+    Surface(){
+        Text("아이의 이름을 알려주세요")
+        Button(onClick = getImage) {
+            Text(text = "이미지 등록")
+        }
+        Text(text = "이름")
+        TextField(value = nameState, onValueChange = { textValue -> nameState = textValue})
+    }
+
+
 }
 @Composable
 fun SelectBreedContent(
@@ -208,14 +271,13 @@ fun FinishContent(
     Text(text = "finish")
 }
 
-//이동시 네비게이션
 @Composable
 fun Navigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = "selectImage",
     getImage: () -> Unit,
-    isConfirm: MutableState<Array<Boolean?>>
+    onNameChange: (String) -> Unit
     ){
     NavHost(
         modifier = modifier,
@@ -224,12 +286,11 @@ fun Navigation(
         ){
         composable("selectImage"){
             BasicBackground(
-                content = { SelectImageContent(modifier = Modifier, getImage) },
+                content = { SelectImageContent(modifier = Modifier, getImage, onNameChange) },
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("selectBreed") },
                 back = { navController.navigate("selectImage") },
-                state = 0,
-                isConfirm = isConfirm
+                state = 0
             )
         }
         composable("selectBreed"){
@@ -238,8 +299,7 @@ fun Navigation(
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("inputBasic") },
                 back = { navController.navigate("selectImage")},
-                state = 1,
-                isConfirm = isConfirm
+                state = 1
             )
         }
         composable("inputBasic"){
@@ -248,8 +308,7 @@ fun Navigation(
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("selectHealth") },
                 back = { navController.navigate("selectBreed")},
-                state = 2,
-                isConfirm = isConfirm
+                state = 2
             )
         }
         composable("selectHealth"){
@@ -258,8 +317,7 @@ fun Navigation(
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("finish") },
                 back = { navController.navigate("inputBasic")},
-                state = 3,
-                isConfirm = isConfirm
+                state = 3
             )
         }
         composable("finish"){
@@ -268,8 +326,7 @@ fun Navigation(
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("finish") },
                 back = {navController.navigate("selectHealth")},
-                state = 4,
-                isConfirm = isConfirm
+                state = 4
             )
         }
     }
@@ -284,8 +341,7 @@ fun BasicBackground(
     skip: () -> Unit,
     next: () -> Unit,
     back: () -> Unit,
-    state: Int,
-    isConfirm: MutableState<Array<Boolean?>>
+    state: Int
                     ){
     AppTheme() {
         Scaffold(
@@ -311,7 +367,6 @@ fun BasicBackground(
                             shape = RectangleShape,
                             onClick = next,
                             modifier = Modifier.fillMaxSize(),
-                            enabled = isConfirm.getValue().get(state)!!
                         ) {
                             Text(text = "다음")
                         }

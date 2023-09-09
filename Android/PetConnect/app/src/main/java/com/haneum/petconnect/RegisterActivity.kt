@@ -21,7 +21,6 @@ class RegisterActivity : AppCompatActivity(), RegisterContract.View{
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val intent = Intent(this,LoginActivity::class.java)
 
         repository = RegisterRepository(this)
         presenter = RegisterPresenter(this@RegisterActivity, repository)
@@ -32,20 +31,23 @@ class RegisterActivity : AppCompatActivity(), RegisterContract.View{
     private fun initButtonListener(){
         var strEmail: String?
         var strPw: String?
+        var strName: String?
+        var strPhone: String?
         binding.btnRegister.setOnClickListener {
             strEmail = binding.etEmail.text?.toString()
             strPw = binding.etPwd.text?.toString()
+            strName = binding.etName.text?.toString()
+            strPhone = binding.etPhone.text?.toString()
             if (strEmail == "" || strPw == ""){
                 Toast.makeText(this,"실패~",Toast.LENGTH_SHORT).show()
             }else{
-                presenter.register(strEmail!!,strPw!!)
+                presenter.register(strEmail!!,strPw!!, strName!!, strPhone!!)
             }
         }
     }
 
     override fun goLogin() {
         Toast.makeText(this,"이메일 인증을 확인하세요", Toast.LENGTH_SHORT).show()
-        //startActivity(intent)
         finish()
     }
 
