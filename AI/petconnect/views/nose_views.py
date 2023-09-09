@@ -171,6 +171,7 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
 # [등록 API]
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    global fo
     if request.method == 'POST':
         print(request.form)
         dogNose2 = request.files['dogNose2']
@@ -413,9 +414,10 @@ def createProfileFolder(directory):
 
 #db
 def db_connector():
-    connector = pymysql.connect(host='localhost',
-                                  user='root',
+    connector = pymysql.connect(host='petconnect.cfqtdjr2iyqh.ap-northeast-2.rds.amazonaws.com',
+                                  user='admin',
                                   password='Qwer12345678!',
                                   db='pet_connect',
-                                  charset='utf8')
+                                  charset='utf8',
+                                  port = 3306)
     return connector

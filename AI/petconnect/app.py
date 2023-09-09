@@ -28,11 +28,11 @@ def create_app():
     from views import nose_views
     app.register_blueprint(nose_views.bp)
     
-    from views import disease_views
-    app.register_blueprint(disease_views.bp)
+    # from views import disease_views
+    # app.register_blueprint(disease_views.bp)
 
-    from views import eye_views
-    app.register_blueprint(eye_views.bp)
+    # from views import eye_views
+    # app.register_blueprint(eye_views.bp)
     
     @app.route('/' ,methods=['GET', 'POST'])
     def connect_with_android():
