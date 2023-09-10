@@ -7,7 +7,7 @@ from PIL import Image
 from histo_clahe import histo_clahe
 
 parser = argparse.ArgumentParser(description='Argparse Tutorial')
-parser.add_argument('--dir', default='5',help='dataset directory')
+parser.add_argument('--dir', default='car',help='dataset directory')
 parser.add_argument('--savedir', default='./Dog-Data/train',help='save directory')
 opt = parser.parse_args()
 
@@ -24,8 +24,6 @@ def get_path(path):
 
 # 미등록강아지 경로
 path =  './rawimage/' + opt.dir
-
-
 
 file_list = os.listdir(path)
 

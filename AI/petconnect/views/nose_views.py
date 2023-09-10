@@ -413,8 +413,8 @@ def createProfileFolder(directory):
 
 #db
 def db_connector():
-    connector = pymysql.connect(host='localhost',
-                                  user='root',
+    connector = pymysql.connect(host='petconnect.cfqtdjr2iyqh.ap-northeast-2.rds.amazonaws.com',
+                                  user='admin',
                                   password='Qwer12345678!',
                                   db='pet_connect',
                                   charset='utf8')

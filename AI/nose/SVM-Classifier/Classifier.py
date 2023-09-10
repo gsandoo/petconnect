@@ -15,7 +15,7 @@ from histo_clahe import histo_clahe
 
 parser = argparse.ArgumentParser(description='Argparse Tutorial')
 parser.add_argument('--dir', default='Dog-Data',help='dataset directory')
-parser.add_argument('--test', default='test_7.jpg',help='test image data')
+parser.add_argument('--test', default='pedestrian.png',help='test image data')
 parser.add_argument('--option',default='test',help='test or register')
 opt = parser.parse_args()
 
