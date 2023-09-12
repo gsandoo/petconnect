@@ -13,4 +13,5 @@
     <string name="title_activity_dog_register">DogRegisterActivity</string>
     <string name="title_activity_dog_info">DogInfoActivity</string>
     <string name="title_activity_dog_check">DogCheckActivity</string>
+
 </resources>

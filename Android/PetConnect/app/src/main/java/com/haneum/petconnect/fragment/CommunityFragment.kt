@@ -16,11 +16,11 @@ class CommunityFragment() : Fragment() {
     private var _binding : FragmentCommunityBinding? = null
     private val binding get() = _binding!!
     private lateinit var writePostFragment: WritePostFragment
+
     private lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -36,6 +36,7 @@ class CommunityFragment() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         writePostFragment = WritePostFragment()
         auth = FirebaseAuth.getInstance()
+
         binding.fbtWrite.setOnClickListener{
             val activity = activity as MainActivity?
             activity?.changeFragment(writePostFragment)
