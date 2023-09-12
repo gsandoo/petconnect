@@ -8,7 +8,7 @@ interface RegisterContract {
     }
 
     interface Presenter {
-        fun register(email: String, pw: String)
+        fun register(email: String, pw: String, name: String, phone: String)
         fun updateData(user: UserAccount)
     }
 }

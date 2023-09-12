@@ -7,15 +7,18 @@ plugins {
 
 android {
     namespace 'com.haneum.petconnect'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.haneum.petconnect"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -38,6 +41,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
 }
 
 dependencies {
@@ -50,9 +58,19 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.4.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
+    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
+    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation platform('androidx.compose:compose-bom:2022.10.00')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 
     // firebase UI
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
@@ -61,5 +79,27 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.0.1'
     implementation 'androidx.compose.ui:ui-tooling:1.0.0-beta07'
     implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation 'androidx.navigation:navigation-compose:2.5.3'
+    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
     debugImplementation "androidx.compose.ui:ui-tooling:1.0.1"
+    implementation "androidx.navigation:navigation-compose:2.5.3"
+
+    //multipart
+    implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    implementation 'com.github.bumptech.glide:compose:1.0.0-alpha.5'
+
+    //coil
+    implementation 'io.coil-kt:coil-compose:2.4.0'
 }
