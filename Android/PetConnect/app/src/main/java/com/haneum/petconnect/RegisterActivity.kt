@@ -1,20 +1,14 @@
 package com.haneum.petconnect
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.haneum.petconnect.contracts.RegisterContract
-import com.haneum.petconnect.data.UserAccount
 import com.haneum.petconnect.databinding.ActivityRegisterBinding
 import com.haneum.petconnect.models.RegisterRepository
 import com.haneum.petconnect.presenters.RegisterPresenter
+import kotlin.math.log
 
 class RegisterActivity : AppCompatActivity(), RegisterContract.View{
 
@@ -26,8 +20,7 @@ class RegisterActivity : AppCompatActivity(), RegisterContract.View{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
         val intent = Intent(this,LoginActivity::class.java)
 
         repository = RegisterRepository(this)
@@ -37,14 +30,23 @@ class RegisterActivity : AppCompatActivity(), RegisterContract.View{
     }
 
     private fun initButtonListener(){
+        var strEmail: String?
+        var strPw: String?
         binding.btnRegister.setOnClickListener {
-            presenter.register(binding.etEmail.text.toString(),binding.etPwd.text.toString())
+            strEmail = binding.etEmail.text?.toString()
+            strPw = binding.etPwd.text?.toString()
+            if (strEmail == "" || strPw == ""){
+                Toast.makeText(this,"실패~",Toast.LENGTH_SHORT).show()
+            }else{
+                presenter.register(strEmail!!,strPw!!)
+            }
         }
     }
 
     override fun goLogin() {
         Toast.makeText(this,"이메일 인증을 확인하세요", Toast.LENGTH_SHORT).show()
-        startActivity(intent)
+        //startActivity(intent)
+        finish()
     }
 
     override fun makeFailureText(reason: String) {

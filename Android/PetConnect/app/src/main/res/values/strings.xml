@@ -4,4 +4,10 @@
     <string name="input_pwd">비밀번호를 입력하세요</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="select_board">
+        <item>일상</item>
+        <item>중고거래</item>
+        <item>정보</item>
+        <item>기타</item>
+    </string-array>
 </resources>

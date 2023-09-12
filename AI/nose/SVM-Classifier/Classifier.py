@@ -15,17 +15,23 @@ from histo_clahe import histo_clahe
 
 parser = argparse.ArgumentParser(description='Argparse Tutorial')
 parser.add_argument('--dir', default='Dog-Data',help='dataset directory')
-parser.add_argument('--test', default='test_0.jpg',help='test image data')
+parser.add_argument('--test', default='test_7.jpg',help='test image data')
 parser.add_argument('--option',default='test',help='test or register')
 opt = parser.parse_args()
 
-#path
+
+#get_path
 def get_path(path):
     change_path = path.replace("\\",'/')
     return change_path
 
-train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
-dog_data_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data")
+# test path
+# train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
+# dog_data_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data")
+
+# register path
+train_path = get_path(os.getcwd()+"/Dog-Data/train")
+dog_data_path = get_path(os.getcwd()+"/Dog-Data")
 
 
 #read data
@@ -98,7 +104,7 @@ def main():
                 all_descriptors.append(des)
 
 
-    num_clusters = 100
+    num_clusters = 200
 
     if not os.path.isfile(dog_data_path+'/bow.pkl'):
         BoW = kmeans_bow(all_descriptors, num_clusters)
@@ -127,9 +133,12 @@ def main():
     #img_test = cv2.imread(opt.dir + '/test/' + opt.test)
     if opt.option == 'test':
         img_test = histo_clahe(dog_data_path + '/test/' + opt.test)
-    elif opt.option == 'register':
-        img_test = histo_clahe(dog_data_path +'/'+ opt.test)
+    elif opt.option == 'getpost':
+        path = os.getcwd()+'/testimage/'
+        register_path = get_path(path)
+        img_test = histo_clahe(register_path + opt.test + '/' + opt.test + '.jpg')
     img = [img_test]
+    
     img_sift_feature = extract_sift_features(img)
     img_bow_feature = create_features_bow(img_sift_feature, BoW, num_clusters)
 
@@ -142,6 +151,7 @@ def main():
     #predict KNN
     img_predict2 = knn.predict(img_bow_feature)
 
+    
     #prediction probability
     svm_prob = svm.predict_proba(img_bow_feature)[0][img_predict[0]]
     knn_prob = knn.predict_proba(img_bow_feature)[0][img_predict2[0]]
@@ -178,7 +188,8 @@ def main():
     # print("KNN Score: ", knn.score(X_test, Y_test))
 
     # print("running time: ", round(time.time() - start, 2))
-
+    
     print(result)
+    return result
 if __name__ == "__main__":
     main()
