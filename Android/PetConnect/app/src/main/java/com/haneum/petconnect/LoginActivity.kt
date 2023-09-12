@@ -53,3 +53,4 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         Toast.makeText(this,reason,Toast.LENGTH_SHORT).show()
     }
 }
+

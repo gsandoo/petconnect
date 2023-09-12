@@ -1,5 +1,8 @@
 package com.haneum.petconnect
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -12,24 +15,48 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -39,25 +66,44 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.load.model.UnitModelLoader
 import com.example.compose.AppTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.haneum.petconnect.data.DogInfo
 import com.haneum.petconnect.service.NoseRegisterApi
 import com.haneum.petconnect.service.NoseRegisterRes
 import com.haneum.petconnect.service.RegisterDto
 import com.haneum.petconnect.service.RetrofitSetting
+import com.haneum.petconnect.ui.bottomBorder
+import com.haneum.petconnect.ui.theme.md_theme_light_primary
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -65,6 +111,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.UUID
 import javax.annotation.Nullable
 
 class DogRegisterActivity : ComponentActivity() {
@@ -77,7 +127,7 @@ class DogRegisterActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         auth = FirebaseAuth.getInstance()
-        user = auth?.currentUser!!
+        user = auth.currentUser!!
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme() {
@@ -87,13 +137,17 @@ class DogRegisterActivity : ComponentActivity() {
                     modifier = Modifier,
                     navController = navController,
                     getImage = { getImage() },
-                    onNameChange = {name -> dataMap["dogName"] = RequestBody.create(MediaType.parse("text/plain"),name)}
+                    onNameChange = {name -> dataMap["dogName"] =
+                        name.toRequestBody("text/plain".toMediaTypeOrNull())
+                    },
+                    clickBreed = {},
+                    clickFinish = { finish() }
                 )
             }
         }
-
         val retrofit = RetrofitSetting.getInstance()
         val service = retrofit.create(NoseRegisterApi::class.java)
+
         images = arrayOfNulls<File>(5)
 
         cbActivityResultLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()){
@@ -108,7 +162,8 @@ class DogRegisterActivity : ComponentActivity() {
                             val imageUri = data!!.getItemAt(i).uri
                             images[i] = File(absolutelyPath(this,imageUri))
                         }
-                        noseRegister(images, service)
+                        //noseRegister(images, service)
+                        testUpload(images)
                     }
                 }else {
                     Toast.makeText(this, "사진을 5장 선택해주세요", Toast.LENGTH_LONG).show()
@@ -124,10 +179,6 @@ class DogRegisterActivity : ComponentActivity() {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.action = Intent.ACTION_GET_CONTENT
         cbActivityResultLauncher.launch(intent)
-    }
-
-    fun isConfirm(){
-
     }
 
     @Nullable
@@ -154,31 +205,90 @@ class DogRegisterActivity : ComponentActivity() {
         return file.absolutePath
     }
 
+    private fun testUpload(imageFiles: Array<File?>){
+        val db = Firebase.firestore
+        var fireStoreData: DogInfo
+        val storage = FirebaseStorage.getInstance()
+
+        var fileName =
+            SimpleDateFormat("yyyyMMddHHmmss").format(Date())+"_"+user.uid.toString()
+        storage.reference.child("image").child(fileName)
+            .putFile(imageFiles[0]!!.toUri())//어디에 업로드할지 지정
+            .addOnSuccessListener {
+                    taskSnapshot -> // 업로드 정보를 담는다
+                taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener {
+                    Toast.makeText(this, it.toString(), Toast.LENGTH_SHORT).show()
+                    fireStoreData = DogInfo(
+                        dog_id = UUID.randomUUID().toString(),
+                        dog_name = dataMap["dogName"].toString(),
+                        birth = "1월",
+                        profile_path = it.toString(),
+                        height = "100cm",
+                        weight = "10kg",
+                        description = "쏼라",
+                        user_id = user.uid,
+                        breed = "포메",
+                        dog_sex = "남아"
+                    )
+                    db.collection("nose")
+                        .add(fireStoreData)
+                }
+            }
+    }
+
     private fun noseRegister(imageFiles: Array<File?>, service: NoseRegisterApi){
         val db = Firebase.firestore
-        val dataMap: HashMap<String, RequestBody> = HashMap()
+        var fireStoreData: DogInfo
+        val storage = FirebaseStorage.getInstance()
 
-        val dogProfile = RequestBody.create(MediaType.parse("image/*"), imageFiles[0])
-        val dogNose1 = RequestBody.create(MediaType.parse("image/*"), imageFiles[0])
-        val dogNose2 = RequestBody.create(MediaType.parse("image/*"), imageFiles[1])
-        val dogNose3 = RequestBody.create(MediaType.parse("image/*"), imageFiles[2])
-        val dogNose4 = RequestBody.create(MediaType.parse("image/*"), imageFiles[3])
-        val dogNose5 = RequestBody.create(MediaType.parse("image/*"), imageFiles[4])
+
+        val dogProfile = imageFiles[0]!!.asRequestBody("image/*".toMediaTypeOrNull())
+        val dogNose1 = imageFiles[0]!!.asRequestBody("image/*".toMediaTypeOrNull())
+        val dogNose2 = imageFiles[1]!!.asRequestBody("image/*".toMediaTypeOrNull())
+        val dogNose3 = imageFiles[2]!!.asRequestBody("image/*".toMediaTypeOrNull())
+        val dogNose4 = imageFiles[3]!!.asRequestBody("image/*".toMediaTypeOrNull())
+        val dogNose5 = imageFiles[4]!!.asRequestBody("image/*".toMediaTypeOrNull())
+
+        var fileName =
+            SimpleDateFormat("yyyyMMddHHmmss").format(Date())+"_"+user.uid.toString()
+        storage.reference.child("image").child(fileName)
+            .putFile(imageFiles[0]!!.toUri())//어디에 업로드할지 지정
+            .addOnSuccessListener {
+                    taskSnapshot -> // 업로드 정보를 담는다
+                taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener {
+                    fireStoreData = DogInfo(
+                        dog_id = UUID.randomUUID().toString(),
+                        dog_name = dataMap["dogName"].toString(),
+                        birth = "1월",
+                        profile_path = it.toString(),
+                        height = "50cm",
+                        weight = "10kg",
+                        description = "쏼라",
+                        user_id = user.uid,
+                        breed = "포메",
+                        dog_sex = "남아"
+                    )
+                    db.collection("nose")
+                        .add(fireStoreData)
+                }
+            }
 
         db.collection("users")
             .whereEqualTo("user_id", user.uid)
             .get()
             .addOnSuccessListener {documents ->
                 for( doc in documents){
-                    dataMap["registrant"] = RequestBody.create(MediaType.parse("text/plain"),doc.data["name"].toString())
-                    dataMap["phoneNum"] = RequestBody.create(MediaType.parse("text/plain"),doc.data["phone"].toString())
+                    dataMap["registrant"] =
+                        doc.data["name"].toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                    dataMap["phoneNum"] =
+                        doc.data["phone"].toString().toRequestBody("text/plain".toMediaTypeOrNull())
                 }
             }
 
-        dataMap["email"] = RequestBody.create(MediaType.parse("text/plain"),user.email)
-        dataMap["dogBreed"] = RequestBody.create(MediaType.parse("text/plain"),"free")
-        dataMap["dogBirthYear"] = RequestBody.create(MediaType.parse("text/plain"),"2020")
-        dataMap["dogSex"] = RequestBody.create(MediaType.parse("text/plain"),"male")
+        dataMap["email"] = user.email!!.toRequestBody("text/plain".toMediaTypeOrNull())
+        dataMap["dogBreed"] = "free".toRequestBody("text/plain".toMediaTypeOrNull())
+        dataMap["dogBirthYear"] = "2020".toRequestBody("text/plain".toMediaTypeOrNull())
+        dataMap["dogSex"] = "male".toRequestBody("text/plain".toMediaTypeOrNull())
 
         val imageMap: HashMap<String, MultipartBody.Part> = HashMap()
         imageMap["dogProfile"] =
@@ -236,27 +346,101 @@ fun SelectImageContent(
         mutableStateOf("")
     }
     Surface(){
-        Text("아이의 이름을 알려주세요")
-        Button(onClick = getImage) {
-            Text(text = "이미지 등록")
+        Column() {
+            Text("아이의 이름을 알려주세요")
+            Box(
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        spotColor = Color(0x1F000000),
+                        ambientColor = Color(0x1F000000)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFB1C5CD),
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .padding(1.dp)
+                    .width(153.dp)
+                    .height(153.dp)
+                    .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 12.dp))
+                    .clickable { getImage() },
+            ){
+                Column(
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_photo_camera_24),
+                        contentDescription = "image description",
+                        tint =  Color(0xFF426CB4),
+                    )
+                    Text(
+                        text = "0 / 6",
+                        // Body3
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.roboto_black)),
+                            fontWeight = FontWeight(400),
+                            color = Color(0xFF426CB4),
+                        )
+                    )
+                }
+            }
+            Text(text = "이름")
+            OutlinedTextField(
+                modifier = Modifier
+                    .bottomBorder(1.dp, Color.LightGray),
+                value = nameState,
+                onValueChange = { textValue -> nameState = textValue},
+                placeholder = {Text("이름을 입력해주세요")},
+                colors = TextFieldDefaults.textFieldColors(
+
+                ),
+                singleLine = true
+            )
         }
-        Text(text = "이름")
-        TextField(value = nameState, onValueChange = { textValue -> nameState = textValue})
     }
-
-
 }
+
 @Composable
 fun SelectBreedContent(
     modifier: Modifier,
+    clickBreed: (String) -> Unit
 ){
-    Text(text = "Breed")
+    val nameList = listOf<String>("리트리버", "포메")
+    Text(text = "반려견의 견종은 무엇인가요?")
+    Divider(color = Color.Blue, thickness = 1.dp)
+    ButtonList(names = nameList, clickItem = clickBreed)
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputBasicContent(
     modifier: Modifier,
+    dialog: DatePickerDialog,
+    dateState: String
 ){
-    Text(text = "input!")
+    Text(text = "반려견의 기본 정보를 알려주세요")
+    Text(text = "성별")
+    Text(text = "생년월일")
+    Box(
+        modifier = Modifier.clickable {
+            dialog.show()
+        }.fillMaxWidth()
+    ){
+        Text(
+            text = dateState,
+            modifier = Modifier.align(Alignment.TopStart)
+        )
+        Icon(
+            modifier = Modifier.align(Alignment.TopEnd),
+            painter = painterResource(id = com.firebase.ui.auth.R.drawable.material_ic_calendar_black_24dp),
+            contentDescription = "image description",
+            tint =  Color(0xFF426CB4),
+        )
+    }
+
 }
 @Composable
 fun SelectHealthContent(
@@ -277,8 +461,23 @@ fun Navigation(
     navController: NavHostController = rememberNavController(),
     startDestination: String = "selectImage",
     getImage: () -> Unit,
-    onNameChange: (String) -> Unit
+    onNameChange: (String) -> Unit,
+    clickBreed: (String) -> Unit,
+    clickFinish: () -> Unit
     ){
+    val calendar = Calendar.getInstance()
+    var dateState by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { view, year, month, dayOfMonth ->
+            dateState = "$year"
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH),
+    )
+
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -289,13 +488,13 @@ fun Navigation(
                 content = { SelectImageContent(modifier = Modifier, getImage, onNameChange) },
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("selectBreed") },
-                back = { navController.navigate("selectImage") },
+                back = { clickFinish() },
                 state = 0
             )
         }
         composable("selectBreed"){
             BasicBackground(
-                content = { SelectBreedContent(modifier = Modifier) },
+                content = { SelectBreedContent(modifier = Modifier, clickBreed = clickBreed) },
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("inputBasic") },
                 back = { navController.navigate("selectImage")},
@@ -304,7 +503,7 @@ fun Navigation(
         }
         composable("inputBasic"){
             BasicBackground(
-                content = { SelectHealthContent(modifier = Modifier) },
+                content = { InputBasicContent(modifier = Modifier, datePickerDialog, dateState) },
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("selectHealth") },
                 back = { navController.navigate("selectBreed")},
@@ -313,7 +512,7 @@ fun Navigation(
         }
         composable("selectHealth"){
             BasicBackground(
-                content = { InputBasicContent(modifier = Modifier) },
+                content = { SelectHealthContent(modifier = Modifier) },
                 skip = { navController.navigate("finish")},
                 next = { navController.navigate("finish") },
                 back = { navController.navigate("inputBasic")},
@@ -324,7 +523,7 @@ fun Navigation(
             BasicBackground(
                 content = { FinishContent(modifier = Modifier) },
                 skip = { navController.navigate("finish")},
-                next = { navController.navigate("finish") },
+                next = { clickFinish() },
                 back = {navController.navigate("selectHealth")},
                 state = 4
             )
@@ -375,8 +574,14 @@ fun BasicBackground(
             },)
         {
             Surface(modifier = Modifier.padding(it)) {
-                StepsProgressBar(modifier = Modifier.fillMaxWidth(), numberOfSteps = 4, currentStep = state)
-                content()
+                Column() {
+                    StepsProgressBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        numberOfSteps = 4,
+                        currentStep = state
+                    )
+                    content()
+                }
             }
         }
     }
@@ -402,7 +607,6 @@ fun StepsProgressBar(modifier: Modifier = Modifier, numberOfSteps: Int, currentS
 @Composable
 fun Step(modifier: Modifier = Modifier, isCompete: Boolean, isCurrent: Boolean) {
     val color = if (isCompete || isCurrent) Color.Blue else Color.LightGray
-
     Box(modifier = modifier) {
         Divider(
             modifier = Modifier
@@ -413,3 +617,47 @@ fun Step(modifier: Modifier = Modifier, isCompete: Boolean, isCurrent: Boolean) 
         )
     }
 }
+
+@Composable
+fun ButtonList(
+    names: List<String>,
+    clickItem: (String) -> Unit
+){
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 128.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ){
+        items(names) { item ->
+            InteractionButton(onClick = { clickItem(item) }, text = { Text(item) })
+        }
+    }
+}
+
+@SuppressLint("SuspiciousIndentation")
+@Composable
+fun InteractionButton(
+    onClick: () -> Unit,
+    text: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource =
+        remember { MutableInteractionSource() },
+) {
+    AppTheme() {
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val bgColor = if(isPressed) Color.White else md_theme_light_primary
+        val contentColor = if(isPressed) Color.Black else Color.White
+            Button(onClick = onClick,
+                modifier = modifier,
+                interactionSource = interactionSource,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = bgColor,
+                    contentColor = contentColor
+                )
+            ){
+                text()
+            }
+    }
+}
+
