@@ -26,12 +26,12 @@ def get_path(path):
     return change_path
 
 # test path
-train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
-dog_data_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data")
+# train_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data/train")
+# dog_data_path = get_path(os.getcwd()+"/AI/nose/SVM-Classifier/Dog-Data")
 
 # register path
-# train_path = get_path(os.getcwd()+"/Dog-Data/train")
-# dog_data_path = get_path(os.getcwd()+"/Dog-Data")
+train_path = get_path(os.getcwd()+"/Dog-Data/train")
+dog_data_path = get_path(os.getcwd()+"/Dog-Data")
 
 
 #read data

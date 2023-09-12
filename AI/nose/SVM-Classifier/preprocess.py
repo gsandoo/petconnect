@@ -18,12 +18,12 @@ def get_path(path):
     return change_path
 
 # 학습 경로
-os_path = get_path(os.getcwd() + '/AI/nose/SVM-Classifier')
-os.chdir(os_path)
-path =  './image/' + opt.dir
+# os_path = get_path(os.getcwd() + '/AI/nose/SVM-Classifier')
+# os.chdir(os_path)
+# path =  './image/' + opt.dir
 
-# 미등록강아지 경로
-# path =  './rawimage/' + opt.dir
+#미등록강아지 경로
+path =  './rawimage/' + opt.dir
 
 
 
