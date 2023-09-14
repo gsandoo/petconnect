@@ -51,21 +51,17 @@ import com.example.compose.AppTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.haneum.petconnect.contracts.LoginContract
-import com.haneum.petconnect.databinding.ActivityLoginBinding
 import com.haneum.petconnect.models.LoginRepository
 import com.haneum.petconnect.presenters.LoginPresenter
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View {
-    private lateinit var binding: ActivityLoginBinding
     private lateinit var presenter: LoginPresenter
     private lateinit var repository: LoginRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         repository = LoginRepository(this)
         presenter = LoginPresenter(this@LoginActivity, repository)
@@ -98,10 +94,6 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
 
     override fun goMain(user: FirebaseUser) {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(
-            "userInfo",
-            arrayOf(binding.etEmail.text.toString(),binding.etPwd.text.toString())
-        )
         startActivity(intent)
         finish()
     }
@@ -223,14 +215,18 @@ fun GeneratedCode(modifier: Modifier = Modifier, onLoginClick: (String, String) 
         )
         Row(
             modifier = Modifier.align(Alignment.BottomStart)
+                .fillMaxWidth()
         ){
             SquareButton(
-                modifier = Modifier,
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxWidth(),
                 text = "로그인",
                 onClick = {onLoginClick(emailState,passwordState)}
             )
             SquareButton(
-                modifier = Modifier,
+                modifier = Modifier.weight(1F)
+                    .fillMaxWidth(),
                 text = "회원가입",
                 onClick = { onRegisterClick()}
             )
@@ -255,10 +251,10 @@ fun TopAppBar(modifier: Modifier = Modifier) {
 @Composable
 fun SquareButton(modifier: Modifier = Modifier, onClick: () -> Unit, text: String) {
     Button(
+        modifier = modifier,
         onClick = { onClick() },
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xff426cb4)),
         contentPadding = PaddingValues(horizontal = 50.dp, vertical = 15.dp),
-        modifier = modifier.fillMaxWidth(0.5f)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),

@@ -282,7 +282,7 @@ fun MainView(
                         DogRegisterButton(dogRegiClick = {dogRegiClick()})
                     }
                     Row() {
-                    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 120.dp)) {
+                    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 90.dp)) {
                         items(dogInfo.size) { index ->
                             DogProfileCard(listClick = { dogInfoClick() }, dogInfo = dogInfo[index])
                         }
@@ -395,18 +395,19 @@ fun DogProfileCard(
 ){
     ElevatedCard(
         modifier = modifier
-            .padding(8.dp)
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 8.dp)),
+            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 8.dp))
+            .fillMaxSize()
+        ,
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
-        ),
-        colors = CardDefaults.elevatedCardColors(
+        )
+        , colors = CardDefaults.elevatedCardColors(
             containerColor = Color.White
         )
     ) {
         Column(
-            modifier = modifier.clickable { listClick() },
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier.clickable {  },
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -438,7 +439,9 @@ fun IconCard(
     ElevatedCard(
         modifier = modifier
             .padding(8.dp)
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 8.dp)),
+            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 8.dp))
+            .clickable { btnClick() }
+        ,
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),

@@ -8,7 +8,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 
-interface NoseRegisterApi {
+interface NoseApi {
     @Multipart
     @POST("/register")
     fun postNoseRegister(
@@ -20,4 +20,10 @@ interface NoseRegisterApi {
         @Part dogNose4: MultipartBody.Part,
         @Part dogNose5: MultipartBody.Part,
     ): Call<NoseRegisterRes>
+
+    @Multipart
+    @POST("/lookup")
+    fun getNoseCheck(
+        @Part dogNose: MultipartBody.Part
+    ): Call<NoseCheckRes>
 }

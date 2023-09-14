@@ -1,6 +1,5 @@
 package com.haneum.petconnect
 
-
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -46,29 +45,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.compose.AppTheme
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.widget.Toast
 import com.haneum.petconnect.contracts.RegisterContract
-import com.haneum.petconnect.databinding.ActivityRegisterBinding
 import com.haneum.petconnect.models.RegisterRepository
 import com.haneum.petconnect.presenters.RegisterPresenter
-import kotlin.math.log
 
 
 class RegisterActivity : AppCompatActivity(), RegisterContract.View{
 
-    private lateinit var binding: ActivityRegisterBinding
     private lateinit var presenter:RegisterPresenter
     private lateinit var repository: RegisterRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        val intent = Intent(this,LoginActivity::class.java)
+
         repository = RegisterRepository(this)
         presenter= RegisterPresenter(this@RegisterActivity, repository)
 
@@ -85,46 +75,13 @@ class RegisterActivity : AppCompatActivity(), RegisterContract.View{
                         cancelClick = { finish() }
                     )
                 }
-        initButtonListener()
-    }
-
-    private fun initButtonListener(){
-        var strEmail: String?
-        var strPw: String?
-        binding.btnRegister.setOnClickListener {
-            strEmail = binding.etEmail.text?.toString()
-            strPw = binding.etPwd.text?.toString()
-            if (strEmail == "" || strPw == ""){
-                Toast.makeText(this,"실패~",Toast.LENGTH_SHORT).show()
-            }else{
-                presenter.register(strEmail!!,strPw!!)
-
             }
         }
     }
 
-//    private fun initButtonListener(){
-//        var strEmail: String?
-//        var strPw: String?
-//        var strName: String?
-//        var strPhone: String?
-//        binding.btnRegister.setOnClickListener {
-//            strEmail = binding.etEmail.text?.toString()
-//            strPw = binding.etPwd.text?.toString()
-//            strName = binding.etName.text?.toString()
-//            strPhone = binding.etPhone.text?.toString()
-//            if (strEmail == "" || strPw == ""){
-//                Toast.makeText(this,"실패~",Toast.LENGTH_SHORT).show()
-//            }else{
-//                presenter.register(strEmail!!,strPw!!, strName!!, strPhone!!)
-//            }
-//        }
-//    }
 
     override fun goLogin() {
         Toast.makeText(this,"이메일 인증을 확인하세요", Toast.LENGTH_SHORT).show()
-
-        //startActivity(intent)
         finish()
     }
 

@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -43,23 +44,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,7 +89,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.haneum.petconnect.data.DogInfo
-import com.haneum.petconnect.service.NoseRegisterApi
+import com.haneum.petconnect.service.NoseApi
 import com.haneum.petconnect.service.NoseRegisterRes
 import com.haneum.petconnect.service.RegisterDto
 import com.haneum.petconnect.service.RetrofitSetting
@@ -146,11 +143,11 @@ class DogRegisterActivity : ComponentActivity() {
             }
         }
         val retrofit = RetrofitSetting.getInstance()
-        val service = retrofit.create(NoseRegisterApi::class.java)
+        val service = retrofit.create(NoseApi::class.java)
 
         images = arrayOfNulls<File>(5)
 
-        cbActivityResultLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()){
+        cbActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if(it.resultCode == RESULT_OK) {
                 val data = it.data?.clipData
                 if (data != null) { // 사진 여러개 선택한 경우
@@ -236,7 +233,7 @@ class DogRegisterActivity : ComponentActivity() {
             }
     }
 
-    private fun noseRegister(imageFiles: Array<File?>, service: NoseRegisterApi){
+    private fun noseRegister(imageFiles: Array<File?>, service: NoseApi){
         val db = Firebase.firestore
         var fireStoreData: DogInfo
         val storage = FirebaseStorage.getInstance()

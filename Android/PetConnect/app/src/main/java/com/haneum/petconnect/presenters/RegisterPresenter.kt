@@ -16,7 +16,6 @@ class RegisterPresenter(
         repository.registerUser(object : RegisterDataSource.RegisterCallback{
             override fun registerSuccess(user: FirebaseUser) {
                 updateData(UserAccount(user.uid,"","", Timestamp(Date()),name, phone))
-
             }
             override fun registerFailure() {
                 view.makeFailureText("")
