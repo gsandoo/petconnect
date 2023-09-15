@@ -91,7 +91,7 @@ class DogCheckActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 // A surface container using the 'background' color from the theme
-                MainView(
+                DogCheck(
                     back = { finish() },
                     getImage = { getImage() },
                 )
@@ -141,6 +141,8 @@ class DogCheckActivity : ComponentActivity() {
                     // 정상적으로 통신이 성고된 경우
                     var result: NoseCheckRes? = response.body()
                     Log.d("YMC", "onResponse 성공: " + result?.toString());
+                    intent.putExtra("dogNum","")
+                    startActivity(intent)
                 }else{
                     // 통신이 실패한 경우(응답코드 3xx, 4xx 등)
                     Log.d("YMC", "onResponse 실패")
@@ -180,20 +182,9 @@ class DogCheckActivity : ComponentActivity() {
 
 }
 
-@Preview
-@Composable
-fun MainPreview(){
-    AppTheme() {
-        MainView(
-            back = {},
-            getImage = {}
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(
+fun DogCheck(
     modifier: Modifier = Modifier,
     back: () -> Unit,
     getImage: () -> Unit
