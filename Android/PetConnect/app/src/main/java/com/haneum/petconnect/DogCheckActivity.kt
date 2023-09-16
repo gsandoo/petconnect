@@ -141,7 +141,7 @@ class DogCheckActivity : ComponentActivity() {
                     // 정상적으로 통신이 성고된 경우
                     var result: NoseCheckRes? = response.body()
                     Log.d("YMC", "onResponse 성공: " + result?.toString());
-                    intent.putExtra("dogNum","")
+                    intent.putExtra("dogNum",result?.data?.dogRegistNum)
                     startActivity(intent)
                 }else{
                     // 통신이 실패한 경우(응답코드 3xx, 4xx 등)

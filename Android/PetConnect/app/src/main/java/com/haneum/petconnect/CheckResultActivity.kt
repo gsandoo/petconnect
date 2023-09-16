@@ -31,27 +31,50 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.AppTheme
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.haneum.petconnect.data.DogInfo
+import com.haneum.petconnect.fragment.DogProfileCard
 
 class CheckResultActivity : ComponentActivity() {
+    private lateinit var dogNum: String
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme() {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CheckResultView(
-                        next = {finish()},
-                        back = {
-                            val intent = Intent(this, DogCheckActivity::class.java)
-                            startActivity(intent)
-                        }
+        val db = Firebase.firestore
+        var dogInfo: DogInfo = DogInfo()
+        dogNum = intent.getStringExtra("dogNum").toString()
+        db.collection("nose")
+            .whereEqualTo("dog_num", dogNum)
+            .get()
+            .addOnSuccessListener { documents ->
+                for( doc in documents){
+                    dogInfo = DogInfo(
+                        dog_name = doc.data["dog_name"].toString(),
+                        birth = doc.data["birth"].toString(),
+                        profile_path = doc.data["profile_path"].toString(),
+                        breed = doc.data["breed"].toString(),
+                        dog_sex = doc.data["dog_sex"].toString()
                     )
                 }
+                setContent {
+                    AppTheme() {
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            CheckResultView(
+                                next = {finish()},
+                                back = {
+                                    val intent = Intent(this, DogCheckActivity::class.java)
+                                    startActivity(intent)
+                                },
+                                dogInfo = dogInfo
+                            )
+                        }
+                    }
+                }
             }
-        }
+        super.onCreate(savedInstanceState)
     }
 }
 
@@ -60,7 +83,8 @@ class CheckResultActivity : ComponentActivity() {
 fun CheckResultView(
     modifier: Modifier = Modifier,
     next: () -> Unit,
-    back: () -> Unit
+    back: () -> Unit,
+    dogInfo: DogInfo
     ) {
     Scaffold(
         topBar = {
@@ -105,7 +129,7 @@ fun CheckResultView(
             modifier = Modifier
                 .padding(it)
         ) {
-
+            DogProfileCard(listClick = {}, dogInfo = dogInfo)
         }
     }
 }

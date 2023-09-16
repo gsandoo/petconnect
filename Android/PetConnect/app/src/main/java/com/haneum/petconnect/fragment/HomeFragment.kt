@@ -12,15 +12,19 @@ import com.haneum.petconnect.MainActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.withConsumedWindowInsets
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -44,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.ComposeView
@@ -135,7 +140,8 @@ class HomeFragment : Fragment() {
             weight = "50kg",
             description = "슐라슐라",
             breed = "뽀메",
-            dog_sex = "남아"
+            dog_sex = "남아",
+            dog_id = "11"
         )
 
         return ComposeView(requireContext()).apply {
@@ -146,8 +152,9 @@ class HomeFragment : Fragment() {
                 AppTheme() {
                     // In Compose world
                     MainView(
-                        dogInfoClick = {
+                        dogInfoClick = { dogInfo ->
                             var intent = Intent(mContext, DogInfoActivity::class.java)
+                            intent.putExtra("dog_id", dogInfo.dog_id)
                             startActivity(intent)
                         },
                         dogRegiClick = {
@@ -208,7 +215,7 @@ fun mainPreview(){
 fun MainView(
     modifier:Modifier = Modifier,
     dogRegiClick: () -> Unit,
-    dogInfoClick: () -> Unit,
+    dogInfoClick: (DogInfo) -> Unit,
     noseCheck: () -> Unit,
     dogInfo: List<DogInfo>
 ){
@@ -245,7 +252,7 @@ fun MainView(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(20.dp)
                 ){
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -282,9 +289,16 @@ fun MainView(
                         DogRegisterButton(dogRegiClick = {dogRegiClick()})
                     }
                     Row() {
-                    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 90.dp)) {
-                        items(dogInfo.size) { index ->
-                            DogProfileCard(listClick = { dogInfoClick() }, dogInfo = dogInfo[index])
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 150.dp),
+                        contentPadding = PaddingValues(vertical = 20.dp),
+                        modifier = Modifier.wrapContentSize()
+                    ) {
+                        items(dogInfo.size,) { index ->
+                            DogProfileCard(
+                                modifier = Modifier.height(150.dp),
+                                listClick = { dogInfoClick(dogInfo[index]) },
+                                dogInfo = dogInfo[index])
                         }
                     }
                     }
@@ -395,19 +409,21 @@ fun DogProfileCard(
 ){
     ElevatedCard(
         modifier = modifier
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 8.dp))
-            .fillMaxSize()
         ,
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
+            defaultElevation = 1.dp
         )
         , colors = CardDefaults.elevatedCardColors(
             containerColor = Color.White
-        )
+        ),
+        shape = RectangleShape
     ) {
         Column(
-            modifier = modifier.clickable {  },
+            modifier = modifier
+                .clickable { listClick() }
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -419,11 +435,24 @@ fun DogProfileCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .width(60.dp)
-                    .height(60.dp)
+                    .width(80.dp)
+                    .height(80.dp)
             )
-            Text(text = "${dogInfo.dog_name}(${dogInfo.birth})")
-            Text(text = "${dogInfo.breed} - ${dogInfo.dog_sex}")
+            Spacer(modifier = Modifier.size(height = 10.dp, width = 1.dp))
+            Text(
+                text = "${dogInfo.dog_name}(${2023 - dogInfo.birth.toInt()}세)",
+                style = TextStyle(
+                    fontWeight = FontWeight(800),
+                    fontSize = 18.sp
+                )
+            )
+            Text(
+                text = "${dogInfo.breed} - ${dogInfo.dog_sex}",
+                style = TextStyle(
+                    fontWeight = FontWeight(300),
+                    fontSize = 18.sp
+                )
+            )
         }
     }
 }

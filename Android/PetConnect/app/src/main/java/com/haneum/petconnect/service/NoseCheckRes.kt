@@ -7,18 +7,18 @@ data class NoseCheckRes(
     @SerializedName("message")
     val message: String,
     @SerializedName("data")
-    val data: Data
+    val data: CheckData
 )
 
-data class Data(
+data class CheckData(
     val dogBirthYear: String,
     val dogBreed: String,
     val dogName: String,
-    val DogProfile: String,
+    val dogProfile: String,
     val dogRegistNum: String,
     val dogSex: String,
     val email: String,
-    val isSuccess: String,
+    val isSuccess: Boolean,
     val matchRate: String,
     val phoneNum: String,
     val registrant: String
