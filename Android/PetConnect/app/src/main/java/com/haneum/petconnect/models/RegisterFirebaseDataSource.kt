@@ -37,7 +37,7 @@ class RegisterFirebaseDataSource(context: Context): RegisterDataSource {
         callback: RegisterDataSource.UpdateDataCallback,
         user: UserAccount
     ) {
-        db.collection("user")
+        db.collection("users")
             .add(user)
             .addOnSuccessListener {
                 callback.updateSuccess()
