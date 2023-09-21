@@ -12,10 +12,10 @@ class RegisterPresenter(
     val view: RegisterContract.View,
     private val repository: RegisterRepository
     ):RegisterContract.Presenter{
-    override fun register(email: String, pw: String) {
+    override fun register(email: String, pw: String, name: String, phone: String) {
         repository.registerUser(object : RegisterDataSource.RegisterCallback{
             override fun registerSuccess(user: FirebaseUser) {
-                updateData(UserAccount(user.uid,"","", Timestamp(Date())))
+                updateData(UserAccount(user.uid,"","", Timestamp(Date()),name, phone))
             }
             override fun registerFailure() {
                 view.makeFailureText("")

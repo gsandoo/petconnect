@@ -10,4 +10,8 @@
         <item>정보</item>
         <item>기타</item>
     </string-array>
+    <string name="title_activity_dog_register">DogRegisterActivity</string>
+    <string name="title_activity_dog_info">DogInfoActivity</string>
+    <string name="title_activity_dog_check">DogCheckActivity</string>
+    <string name="title_activity_check_result">CheckResultActivity</string>
 </resources>

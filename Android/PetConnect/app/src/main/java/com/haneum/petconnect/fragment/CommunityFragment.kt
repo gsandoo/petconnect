@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.haneum.petconnect.MainActivity
 import com.haneum.petconnect.databinding.FragmentCommunityBinding
 
@@ -13,9 +16,11 @@ class CommunityFragment() : Fragment() {
     private var _binding : FragmentCommunityBinding? = null
     private val binding get() = _binding!!
     private lateinit var writePostFragment: WritePostFragment
+    private lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -30,7 +35,7 @@ class CommunityFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         writePostFragment = WritePostFragment()
-
+        auth = FirebaseAuth.getInstance()
         binding.fbtWrite.setOnClickListener{
             val activity = activity as MainActivity?
             activity?.changeFragment(writePostFragment)

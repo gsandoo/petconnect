@@ -103,4 +103,7 @@ def get_eye_result(dogRegistNum):
 
     except Exception as e:
         print("Error retrieving result from database:", e)
+
         return jsonify({'error': 'Failed to retrieve result from database'})
+        return jsonify({'error': 'Failed to retrieve result from database'})
+
