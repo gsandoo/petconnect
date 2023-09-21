@@ -5,19 +5,19 @@ from skimage.feature import hog
 import pickle
 import pymysql
 
-bp = Blueprint('disease', __name__, url_prefix='/disease')
+bp = Blueprint('eye', __name__, url_prefix='/eye')
 
 # 현재 파일의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# disease_model.pkl의 상대 경로 계산
-disease_model_path = os.path.join(current_dir, '..', '..', 'disease', 'SVM-Classifier', 'disease.pkl')
+# eye_model.pkl의 상대 경로 계산
+eye_model_path = os.path.join(current_dir, '..', '..', 'eye', 'SVM-Classifier', 'eye.pkl')
 
 # SVM 모델 로드
-with open(disease_model_path, 'rb') as model_file:
+with open(eye_model_path, 'rb') as model_file:
     svm_model = pickle.load(model_file)
 
-categories = ['atopy', 'hotspots', 'hair_loss', 'normal']
+categories = ['cataracts', 'cherry_eye', 'normal']
 
 # db
 def db_connector():
@@ -34,7 +34,7 @@ def db_connector():
     return connector
 
 @bp.route('/', methods=['POST'])
-def analyze_disease():
+def analyze_eye():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
 
@@ -56,7 +56,7 @@ def analyze_disease():
         preprocessed_image = cv2.resize(image, (64, 64))
         hog_features = hog(preprocessed_image, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1))
 
-        # Predict the disease category using SVM model
+        # Predict the eye category using SVM model
         predicted_label = svm_model.predict([hog_features])[0]
         predicted_category = categories[predicted_label]
 
@@ -68,7 +68,7 @@ def analyze_disease():
             db_conn = db_connector()
             cursor = db_conn.cursor()
 
-            query = "INSERT INTO disease_results (dogRegistNum, predicted_category) VALUES (%s, %s)"
+            query = "INSERT INTO eye_results (dogRegistNum, predicted_category) VALUES (%s, %s)"
             values = (request.form['dogRegistNum'], predicted_category)
             cursor.execute(query, values)
             db_conn.commit()
@@ -83,12 +83,12 @@ def analyze_disease():
             return jsonify({'error': 'Failed to store result in the database'})
 
 @bp.route('/<dogRegistNum>', methods=['GET'])
-def get_disease_result(dogRegistNum):
+def get_eye_result(dogRegistNum):
     try:
         db_conn = db_connector()
         cursor = db_conn.cursor()
 
-        query = "SELECT predicted_category FROM disease_results WHERE dogRegistNum = %s"
+        query = "SELECT predicted_category FROM eye_results WHERE dogRegistNum = %s"
         values = (dogRegistNum,)
         cursor.execute(query, values)
         result = cursor.fetchone()
