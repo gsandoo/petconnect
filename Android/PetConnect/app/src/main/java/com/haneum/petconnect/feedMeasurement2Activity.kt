@@ -117,9 +117,11 @@ fun set_layout2(){
             singleLine = true
         )
         RoundButton(
-            modifier = Modifier.offset(  y = 450.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally) // 가운데 정렬
+                .padding(30.dp)
+                .offset(y=500.dp),
             onClick = { /* 버튼 클릭 시 실행할 작업 */ }
-
         )
         }
 
