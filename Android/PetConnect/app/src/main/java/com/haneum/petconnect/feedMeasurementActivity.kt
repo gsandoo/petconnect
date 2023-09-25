@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
@@ -225,12 +226,12 @@ fun set_layout(){
     Column(modifier = Modifier
         .fillMaxSize()){
         feed_TopAppBar()
-        feedTitle(modifier = Modifier.padding(50.dp))
+        feedTitle(modifier = Modifier.padding(30.dp, top=60.dp),)
         Box(modifier = Modifier
             .padding(10.dp))
 
         Box(modifier = Modifier
-            .fillMaxSize()
+
             .padding(50.dp)){
             Column{
 
@@ -247,6 +248,10 @@ fun set_layout(){
         }
 
         RoundButton(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally) // 가운데 정렬
+                .padding(30.dp)
+                .offset(y=300.dp),
             onClick = { /* 버튼 클릭 시 실행할 작업 */ }
         )
     }

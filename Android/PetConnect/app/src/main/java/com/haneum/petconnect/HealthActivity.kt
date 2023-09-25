@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
@@ -44,6 +45,7 @@ import com.example.compose.AppTheme
 import androidx.compose.material3.Text as Text
 
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -149,8 +151,8 @@ fun riceiconCode(modifier: Modifier = Modifier) {
                     painter = painterResource(id = R.drawable.rice_icon),
                     contentDescription = "Rectangle 6667355",
                     modifier = Modifier
-                        .requiredWidth(width = 99.dp)
-                        .requiredHeight(height = 58.dp))
+                        .requiredWidth(width = 159.dp)
+                        .requiredHeight(height = 178.dp))
 
     }
 }}}
@@ -209,11 +211,11 @@ fun eyeCode(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
                     .offset(
-                        x = 29.48046875.dp,
-                        y = 35.86065673828125.dp
+                        x = 5.48046875.dp,
+
                     )
-                    .requiredWidth(width = 26.dp)
-                    .requiredHeight(height = 7.dp)
+                    .requiredWidth(width = 120.dp)
+                    .requiredHeight(height = 80.dp)
             )
         }
 
@@ -236,13 +238,13 @@ fun skinCode(modifier: Modifier = Modifier) {
                     y = 49.279541015625.dp
                 )
                 .requiredWidth(width = 49.dp)
-                .requiredHeight(height = 83.dp)
+                .requiredHeight(height = 43.dp)
                 .rotate(degrees = 34.86f)
         ) {
             Box(
                 modifier = Modifier
-                    .requiredWidth(width = 49.dp)
-                    .requiredHeight(height = 83.dp)
+                    .requiredWidth(width = 39.dp)
+                    .requiredHeight(height = 23.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.skin_icon),
@@ -253,8 +255,8 @@ fun skinCode(modifier: Modifier = Modifier) {
                             x = 21.388671875.dp,
                             y = 23.7291259765625.dp
                         )
-                        .requiredWidth(width = 24.dp)
-                        .requiredHeight(height = 18.dp)
+                        .requiredWidth(width = 80.dp)
+                        .requiredHeight(height = 88.dp)
                         .rotate(degrees = 310f))
             }
         }
@@ -286,50 +288,56 @@ fun skinCode(modifier: Modifier = Modifier) {
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun Demo_ExposedDropdownMenuBox(mypets: List<String>) {
-//    val context = LocalContext.current
-//    var expanded by remember { mutableStateOf(false) }
-//    var selectedText by remember { mutableStateOf(mypets[0]) }
-//
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(32.dp)
-//    ) {
-//        ExposedDropdownMenuBox(
-//            expanded = expanded,
-//            onExpandedChange = {
-//                expanded = !expanded
-//            }
-//        ) {
-//            TextField(
-//                value = selectedText,
-//                onValueChange = {},
-//                readOnly = true,
-//                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-//                modifier = Modifier.menuAnchor()
-//            )
-//
-//            ExposedDropdownMenu(
-//                expanded = expanded,
-//                onDismissRequest = { expanded = false }
-//            ) {
-//                mypets.forEach { item ->
-//                    DropdownMenuItem(
-//                        text = { Text(text = item) },
-//                        onClick = {
-//                            selectedText = item
-//                            expanded = false
-//                            Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-//                        }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Demo_ExposedDropdownMenuBox(mypets: List<String>) {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf(mypets[0]) }
+
+    Box(
+        modifier = Modifier
+            .padding(25.dp)
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            TextField(
+                value = selectedText,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White
+                ),
+                modifier = Modifier
+                    .menuAnchor()
+                    .width(100.dp)
+                    .height(35.dp)// 너비를 조절하려면 이 부분을 조절하세요
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                mypets.forEach { item ->
+                    DropdownMenuItem(
+                        text = { Text(text = item, color = Color.Black )
+                            },
+                        onClick = {
+                            selectedText = item
+                            expanded = false
+                            Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun health_record(modifier: Modifier) {
@@ -341,25 +349,18 @@ fun health_record(modifier: Modifier) {
         Column {
             TopAppBar7(
                 modifier = Modifier
-                    .padding(30.dp)
+                    .padding(10.dp)
                     .offset(
                         x = 0.dp,
                         y = 0.dp
                     ),
                 )
             Box(modifier=Modifier
-                .offset(x=15.dp, y=0.dp)
-                .padding(10.dp)){
+                .offset(x=0.dp, y=15.dp)
+                ){
                 Row{
-//            DropDown(modifier=Modifier)
-                    Text(
-                        text = "아토",
-                        color = Color(0xff2b2b2b),
-                        lineHeight = 1.4.em,
-                        style = TextStyle(
-                            fontSize = 20.sp),
-                        modifier = modifier)
-
+                    val mypets = listOf("아토", "별", "Espresso")
+                    Demo_ExposedDropdownMenuBox(mypets = mypets)
 
                     Text(
                         text = "의 건강기록",
@@ -367,13 +368,14 @@ fun health_record(modifier: Modifier) {
                         lineHeight = 1.4.em,
                         style = TextStyle(
                             fontSize = 20.sp),
-                        modifier = modifier)
+                        modifier = modifier
+                            .offset(y=30.dp))
                 }
             }
 
             Box(modifier=Modifier
                 .offset(x=15.dp, y=0.dp)
-                .padding(10.dp)){
+                .padding(20.dp)){
                 Column ( verticalArrangement = Arrangement.Center,) {
                     riceiconCode(
                     )

@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -32,44 +34,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.compose.AppTheme
-
-
-class DiseasePredictionActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    GeneratedCodePreview33()
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun GeneratedCode33(
-    modifier: Modifier = Modifier,
+    modifier: Modifier.Companion =Modifier,
     condition1Text: String,
     condition2Text: String
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Column( modifier = modifier.fillMaxSize()
     ) {
         Text(
             text = "안구질환 촬영 결과",
             color = Color(0xff426cb4),
             textAlign = TextAlign.Center,
             lineHeight = 1.33.em,
-            style = typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall,
             modifier = modifier
-                .requiredWidth(width = 328.dp)
-                .padding(30.dp)
-        )
+                .requiredWidth(width = 300.dp)
+                .requiredHeight(height = 100.dp)
+                .padding(20.dp))
+
         Box(modifier = Modifier) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -99,17 +82,26 @@ fun GeneratedCode33(
                     style = TextStyle(
                         fontSize = 17.sp
                     ),
-                    modifier = modifier.padding(50.dp)
+                    modifier = modifier.padding(30.dp)
                 )
             }
         }
-        RoundButton()
+
+        // 버튼을 화면 아래쪽에 배치
+        RoundButton(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                 // 위쪽 여백 추가
+        )
     }
 }
+
 @Composable
 fun RoundButton(modifier: Modifier = Modifier) {
     Button(
-        onClick = { },
+        onClick = {
+            // 저장 로직 추가
+        },
         shape = RoundedCornerShape(32.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xff426cb4)),
         contentPadding = PaddingValues(horizontal = 104.dp, vertical = 13.dp),
