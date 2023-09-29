@@ -213,62 +213,64 @@ def register():
         print(compare)
         if compare == ['']:
             raise Exception('error')
-        else:
+
+    except Exception as e:
+        print("ML코드가 안돌아가서 등록 실패", e)
+        return jsonify({'message': 'fail'})
+
+    if compare[1] == '등록된강아지':
+        try:
+            
             foundDog = compare[0]
             register = compare[1]
             accuracy : compare[2]
             return jsonify({
                 'foundDog' : foundDog,
                 'register' : register,
-                'accuracy' : accuracy
+                'accuracy' : accuracy,
+                'message' : "등록에 성공하였습니다"
             })
-    except Exception as e:
-        print("ML코드가 안돌아가서 등록 실패", e)
-        return jsonify({'message': 'fail'})
-
-    # if compare[1] == '등록된강아지':
-    #     try:
-    #         isRegistered = db_connector()
-    #         cursor = isRegistered.cursor()
-    #         foundDog = compare[0]
-    #         print("found dog = " + foundDog)
-    #         lookup_sql = "SELECT * FROM pet WHERE uniqueNumber='%s'" % (foundDog)
-    #         cursor.execute(lookup_sql)
-    #         registeredPetDatas = cursor.fetchall()
-    #         print(registeredPetDatas)
-    #         if(len(registeredPetDatas)!=0):
+            # isRegistered = db_connector()
+            # cursor = isRegistered.cursor()
+            # foundDog = compare[0]
+            # print("found dog = " + foundDog)
+            # lookup_sql = "SELECT * FROM pet WHERE uniqueNumber='%s'" % (foundDog)
+            # cursor.execute(lookup_sql)
+            # registeredPetDatas = cursor.fetchall()
+            # print(registeredPetDatas)
+            # if(len(registeredPetDatas)!=0):
                 
-    #             try:
-    #                 registeredPetName = registeredPetDatas[0][1]
-    #                 registeredPetBreed = registeredPetDatas[0][2]
-    #                 registeredPetSex = registeredPetDatas[0][3]
-    #                 registeredPetBirthYear = registeredPetDatas[0][4]
-    #                 registeredPetProfile = registeredPetDatas[0][5] + '.jpg'
+            #     try:
+            #         registeredPetName = registeredPetDatas[0][1]
+            #         registeredPetBreed = registeredPetDatas[0][2]
+            #         registeredPetSex = registeredPetDatas[0][3]
+            #         registeredPetBirthYear = registeredPetDatas[0][4]
+            #         registeredPetProfile = registeredPetDatas[0][5] + '.jpg'
                 
-    #                 return jsonify(
-    #                 {'data': {'dogRegistNum': foundDog, 'dogName': registeredPetName, 'dogBreed': registeredPetBreed,
-    #                         'dogSex': registeredPetSex,
-    #                         'dogBirthYear': registeredPetBirthYear, 'dogProfile': registeredPetProfile,
-    #                         'isSuccess': False}, 'message': '이미 등록된 강아지입니다.'})
-    #             except Exception as e:
-    #                 print('registeredPetDatas 정보에서 예외가 발생했습니다', e)
-    #                 return jsonify({'message': 'fail'})
+            #         return jsonify(
+            #         {'data': {'dogRegistNum': foundDog, 'dogName': registeredPetName, 'dogBreed': registeredPetBreed,
+            #                 'dogSex': registeredPetSex,
+            #                 'dogBirthYear': registeredPetBirthYear, 'dogProfile': registeredPetProfile,
+            #                 'isSuccess': False}, 'message': '이미 등록된 강아지입니다.'})
+            #     except Exception as e:
+            #         print('registeredPetDatas 정보에서 예외가 발생했습니다', e)
+            #         return jsonify({'message': 'fail'})
            
-    #         else:
-    #             # ML 오차로 인한 에러 방지.. 개체 등록을 실행합니다
-    #             print("ML 오차로 인한 에러 방지.. 개체 등록을 실행합니다.")
-    #             return unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, formoment1)
+            # else:
+            #     # ML 오차로 인한 에러 방지.. 개체 등록을 실행합니다
+            #     print("ML 오차로 인한 에러 방지.. 개체 등록을 실행합니다.")
+            #     return unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, formoment1)
         
-    #     except Exception as e:
-    #         print('isRegistered db에서 예외가 발생했습니다', e)
-    #         return jsonify({'message': 'fail'})
+        except Exception as e:
+            print('isRegistered db에서 예외가 발생했습니다', e)
+            return jsonify({'message': 'fail'})
 
-    #     finally:
-    #         if isRegistered:
-    #             cursor.close()
-    #             isRegistered.close()
+        # finally:
+        #     if isRegistered:
+        #         cursor.close()
+        #         isRegistered.close()
 
-    # # 미등록강아지인 경우
+    # 미등록강아지인 경우
     # else:
     #     return unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, formoment1)
     
@@ -326,7 +328,8 @@ def lookup():
                 return jsonify({
                     'foundDog' : foundDog,
                     'register' : register,
-                    'accuracy' : accuracy
+                    'accuracy' : accuracy,
+                    'message' : "조회에 성공하였습니다"
                 })
             except Exception as e:
                 print("lookupdb에 예외가 발생했습니다", e)
