@@ -24,6 +24,46 @@
         android:theme="@style/Theme.PetConnect"
         tools:targetApi="31">
         <activity
+            android:name=".SkinResultInfoActivity"
+            android:exported="false"
+            android:label="@string/title_activity_skin_result_info"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".SkinSaveResultActivity"
+            android:exported="false"
+            android:label="@string/title_activity_skin_save_result"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".EyeImagingResults"
+            android:exported="false"
+            android:label="@string/title_activity_eye_imaging_results"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".SkinResultActivity"
+            android:exported="false"
+            android:label="@string/title_activity_skin_result"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".EyeSaveResultActivity"
+            android:exported="false"
+            android:label="@string/title_activity_eye_save_result"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".EyeSaveActivity"
+            android:exported="false"
+            android:label="@string/title_activity_eye_save"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".EyeResultInfoActivity"
+            android:exported="false"
+            android:label="@string/title_activity_eye_result_info"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".EyeResultActivity"
+            android:exported="false"
+            android:label="@string/title_activity_eye_result"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
             android:name=".CheckResultActivity"
             android:exported="false"
             android:label="@string/title_activity_check_result"
