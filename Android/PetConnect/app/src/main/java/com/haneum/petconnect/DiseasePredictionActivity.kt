@@ -132,7 +132,6 @@ fun RoundButton(modifier: Modifier = Modifier) {
 @Composable
 private fun GeneratedCodePreview33() {
     GeneratedCode33(
-        modifier = Modifier,
         condition1Text = "백내장",
         condition2Text = "체리아이"
     )

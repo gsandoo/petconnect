@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +41,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,6 +54,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,6 +74,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -84,21 +89,18 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.haneum.petconnect.contracts.DogRegisterContract
 import com.haneum.petconnect.data.DogInfo
 import com.haneum.petconnect.fragment.DogProfileCard
+import com.haneum.petconnect.models.DogRegisterRepository
+import com.haneum.petconnect.presenters.DogRegisterPresenter
 import com.haneum.petconnect.service.NoseApi
 import com.haneum.petconnect.service.NoseRegisterRes
 import com.haneum.petconnect.service.RetrofitSetting
 import com.haneum.petconnect.ui.bottomBorder
+import com.haneum.petconnect.ui.theme.md_theme_dark_onPrimary
 import com.haneum.petconnect.ui.theme.md_theme_light_primary
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -108,16 +110,21 @@ import java.util.Calendar
 import java.util.Date
 import javax.annotation.Nullable
 
-class DogRegisterActivity : ComponentActivity() {
+class DogRegisterActivity : ComponentActivity(),DogRegisterContract.View {
     private lateinit var images: Array<File?>
-    private val dataMap: HashMap<String, RequestBody> = HashMap()
     lateinit var auth: FirebaseAuth
     lateinit var user: FirebaseUser
+    private lateinit var repository: DogRegisterRepository
+    private lateinit var presenter: DogRegisterPresenter
+    private var isDone: Boolean = false
+    private lateinit var dogId: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val retrofit = RetrofitSetting.getInstance()
-        val service = retrofit.create(NoseApi::class.java)
+        var fileName: String = ""
+        repository = DogRegisterRepository()
+        presenter = DogRegisterPresenter(this@DogRegisterActivity, repository)
+
         auth = FirebaseAuth.getInstance()
         images = arrayOfNulls<File>(5)
         user = auth.currentUser!!
@@ -151,11 +158,11 @@ class DogRegisterActivity : ComponentActivity() {
                 Navigation(
                     modifier = Modifier,
                     navController = navController,
-                    getProfile = { singleImagePickerLauncher.launch(
-                        PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                        )
-                    ) },
+                    getProfile = {
+                        singleImagePickerLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )) },
                     getNose = {
                         multipleImagePickerLauncher.launch(
                             PickVisualMediaRequest(
@@ -165,110 +172,66 @@ class DogRegisterActivity : ComponentActivity() {
                     },
                     profile = selectedProfile,
                     nose = selectedNose,
-                    clickFinish = { finish() },
+                    clickFinish = {
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    },
                     isImageSelected = (selectedProfile != null),
                     showMessage = { message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()},
-                    noseRegister = { data -> noseRegister(noses = selectedNose, profile = selectedProfile, data = data, service = service)}
+                    noseRegister = { data ->
+                        if(fileName != "") {
+                            presenter.dogRegister(data, fileName)
+                        } },
+                    imageUpload = {fileName = imageUpload(selectedProfile, selectedNose)}
                 )
             }
         }
     }
 
 
-    @Nullable
-    fun absolutelyPath(context: Context, uri: Uri): String? {
-        val contentResolver: ContentResolver = context.contentResolver ?: return null
-
-        // 파일 경로를 만듬
-        val filePath: String = (context.applicationInfo.dataDir + File.separator
-                + System.currentTimeMillis())
-        val file = File(filePath)
-        try {
-            // 매개변수로 받은 uri 를 통해  이미지에 필요한 데이터를 불러 들인다.
-            val inputStream = contentResolver.openInputStream(uri) ?: return null
-            // 이미지 데이터를 다시 내보내면서 file 객체에  만들었던 경로를 이용한다.
-            val outputStream: OutputStream = FileOutputStream(file)
-            val buf = ByteArray(1024)
-            var len: Int
-            while (inputStream.read(buf).also { len = it } > 0) outputStream.write(buf, 0, len)
-            outputStream.close()
-            inputStream.close()
-        } catch (ignore: IOException) {
-            return null
-        }
-        return file.absolutePath
-    }
-
-    private fun noseRegister(noses: List<Uri>, profile: Uri?, service: NoseApi, data: DogInfo): String{
-        val db = Firebase.firestore
+    private fun imageUpload(profile: Uri?, noses: List<Uri>): String{
         val storage = FirebaseStorage.getInstance()
-        var noseBody: MutableList<MultipartBody.Part> = mutableListOf()
-
-        for ((cnt, nose) in noses.withIndex()){
-            noseBody.add(MultipartBody.Part.createFormData("dogNose$cnt","dogNose$cnt", File(absolutelyPath(this, nose))!!.asRequestBody("image/*".toMediaTypeOrNull())))
+        //storage.useEmulator("10.0.2.2",9199)
+        val fileName = SimpleDateFormat("yyyyMMddHHmmss").format(Date())+"_"+user.uid.toString()
+        val db = Firebase.firestore
+        storage.reference.child("image").child(fileName).child("profile")
+            .putFile(profile!!)//어디에 업로드할지 지정
+            .addOnSuccessListener {
+                    taskSnapshot -> // 업로드 정보를 담는다
+                taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener {uri ->
+                    db.collection("nose")
+                        .add(hashMapOf("profile" to uri))
+                }
+            }
+        for ((index, nose) in noses.withIndex()){
+            storage.reference.child("image").child(fileName).child("nose"+(index + 1).toString())
+                .putFile(nose)//어디에 업로드할지 지정
+                .addOnSuccessListener {
+                        taskSnapshot -> // 업로드 정보를 담는다
+                    taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener {uri ->
+                        db.collection("nose")
+                            .add(hashMapOf("profile"+(index+1).toString() to uri))
+                    }
+                }
         }
-        var profileBody = MultipartBody.Part.createFormData("dogProfile","profile", File(absolutelyPath(this, profile!!))!!.asRequestBody("image/*".toMediaTypeOrNull()))
 
-        var fileName =
-            SimpleDateFormat("yyyyMMddHHmmss").format(Date())+"_"+user.uid.toString()
-
-        db.collection("users")
-            .whereEqualTo("user_id", user.uid)
-            .get()
-            .addOnSuccessListener {documents ->
-                for( doc in documents){
-                    dataMap["registrant"] =
-                        doc.data["name"].toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                    dataMap["phoneNum"] =
-                        doc.data["phone"].toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                }
-            }
-
-        dataMap["email"] = user.email!!.toRequestBody("text/plain".toMediaTypeOrNull())
-        dataMap["dogBreed"] = data.breed.toRequestBody("text/plain".toMediaTypeOrNull())
-        dataMap["dogBirthYear"] = data.birth.toRequestBody("text/plain".toMediaTypeOrNull())
-        dataMap["dogSex"] = data.dog_sex.toRequestBody("text/plain".toMediaTypeOrNull())
-
-
-
-
-
-        service.postNoseRegister(
-            dataMap,
-            profileBody,
-            noseBody[0],
-            noseBody[1],
-            noseBody[2],
-            noseBody[3],
-            noseBody[4]
-        )?.enqueue(object : Callback<NoseRegisterRes> {
-            override fun onResponse(call: Call<NoseRegisterRes>, response: Response<NoseRegisterRes>) {
-                if(response.isSuccessful){
-                    // 정상적으로 통신이 성고된 경우
-                    var result: NoseRegisterRes? = response.body()
-                    Log.d("YMC", "onResponse 성공: " + result?.toString());
-                    dataMap["dog_id"] = result!!.data.dogRegistNum.toRequestBody("text/plain".toMediaTypeOrNull())
-                    storage.reference.child("image").child(fileName)
-                        .putFile(profile)//어디에 업로드할지 지정
-                        .addOnSuccessListener {
-                                taskSnapshot -> // 업로드 정보를 담는다
-                            taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener {
-                                db.collection("nose")
-                                    .add(data)
-                            }
-                        }
-                }else{
-                    // 통신이 실패한 경우(응답코드 3xx, 4xx 등)
-                    Log.d("YMC", "onResponse 실패")
-                }
-            }
-            override fun onFailure(call: Call<NoseRegisterRes>, t: Throwable) {
-                // 통신 실패 (인터넷 끊킴, 예외 발생 등 시스템적인 이유)
-                Log.d("YMC", "onFailure 에러: " + t.message.toString());
-            }
-        })
-        return "true"
+        return fileName
     }
+
+    override fun makeFailureMessage(reason: String) {
+        runOnUiThread{Toast.makeText(this, reason, Toast.LENGTH_LONG).show()}
+    }
+
+    override fun nextStep(result: String, dogId: String) {
+        runOnUiThread{Toast.makeText(this,result,Toast.LENGTH_LONG).show()}
+        val intent = Intent(this, ShowResultActivity::class.java)
+        intent.putExtra("dogId", dogId)
+        intent.putExtra("kind", "register")
+        intent.putExtra("result",result)
+        startActivity(intent)
+        finish()
+    }
+
 }
 
 //각 화면 마다의 구성들
@@ -423,7 +386,7 @@ fun SelectBreedContent(
     modifier: Modifier,
     clickBreed: (String) -> Unit
 ){
-    val nameList = listOf<String>("골든리트리버", "닥스훈트", "레브라도 리트리버", "몰티즈", "미니어쳐 슈나우저", "미니어쳐 푸들", "미니어쳐 핀셔", "베틀링턴 테리어", "비글", "비숑 프리제", "보스턴 테리어", "사모예드", "세틀랜드 쉽독", "스탠더드 푸들", "시바 이누", "시베리안 허스키", "시츄")
+    val nameList = listOf<String>("골든리트리버", "닥스훈트", "레브라도 리트리버", "몰티즈", "미니어쳐 슈나우저", "미니어쳐 푸들", "미니어쳐 핀셔", "베틀링턴 테리어", "비글", "비숑 프리제", "보스턴 테리어", "사모예드", "세틀랜드 쉽독", "스탠더드 푸들", "시바 이누", "시베리안 허스키", "시츄", "포메라니안")
     Column(modifier = modifier) {
         Text(text = "반려견의 견종은 무엇인가요?")
         Divider(color = Color.White, thickness = 1.dp)
@@ -518,55 +481,35 @@ fun InputBasicContent(
 fun SelectHealthContent(
     modifier: Modifier,
 ){
-    val nameList = listOf<String>("골든리트리버", "닥스훈트", "레브라도 리트리버", "몰티즈", "미니어쳐 슈나우저", "미니어쳐 푸들", "미니어쳐 핀셔", "베틀링턴 테리어", "비글", "비숑 프리제", "보스턴 테리어", "사모예드", "세틀랜드 쉽독", "스탠더드 푸들", "시바 이누", "시베리안 허스키", "시츄")
+    val nameList = listOf<String>("알레르기", "관절", "백내장", "당뇨", "비만", "허리디스크", "외이염", "중이염", "내이염", "슬개골")
     Column(modifier = modifier) {
-        Text(text = "반려견의 견종은 무엇인가요?")
+        Text(text = "반려견의 건강키워드는 무엇인가요?")
         Divider(color = Color.Blue, thickness = 1.dp)
         ButtonList(names = nameList, clickItem = {})
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+@Preview
 @Composable
-fun FinishContent(
-    modifier: Modifier,
-    home: () -> Unit,
-    dogInfo: DogInfo
-){
-    AppTheme() {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {Text("")}
+fun PendingScreen(){
+        AppTheme {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = md_theme_light_primary
                 )
-            }, bottomBar = {
-                BottomAppBar(
-                    content = {
-                        Button(
-                            shape = RectangleShape,
-                            onClick = home,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(text = "홈으로 돌아가기")
-                        }
-                    }
-                )
-            },)
-        {
-            Surface(modifier = Modifier.padding(it)) {
-                Column() {
-                    Text("축하드려요!")
-                    Text("등록이 완료되었어요.")
-                    DogProfileCard(listClick = {}, dogInfo = dogInfo)
-                }
             }
         }
-    }
 }
 
 @Composable
 fun Navigation(
     modifier: Modifier = Modifier,
-    noseRegister: (DogInfo) -> String,
+    noseRegister: (DogInfo) -> Unit,
     navController: NavHostController = rememberNavController(),
     startDestination: String = "selectImage",
     getProfile: () -> Unit,
@@ -575,7 +518,8 @@ fun Navigation(
     nose: List<Uri>,
     clickFinish: () -> Unit,
     showMessage: (String) -> Unit,
-    isImageSelected: Boolean
+    isImageSelected: Boolean,
+    imageUpload: () -> Unit,
     ){
     val calendar = Calendar.getInstance()
     var dateState by remember { mutableStateOf("") }
@@ -611,6 +555,7 @@ fun Navigation(
                 skip = { clickFinish()},
                 next = {
                     if(isNext(dogInfo, 0) && isImageSelected){
+                        imageUpload()
                         navController.navigate("selectBreed")
                     }else {
                         showMessage("정보를 입력하세요")
@@ -657,8 +602,8 @@ fun Navigation(
                 skip = { navController.navigate("finish")},
                 next = {
                     if(isNext(dogInfo, 3)){
-                        noseRegister(dogInfo)
                         navController.navigate("finish")
+                        noseRegister(dogInfo)
                     }else {
                         showMessage("정보를 입력하세요")
                     }
@@ -668,10 +613,12 @@ fun Navigation(
             )
         }
         composable("finish"){
-            FinishContent(modifier = contentModifier, home = clickFinish, dogInfo = dogInfo)
+                PendingScreen()
         }
     }
 }
+
+
 
 
 // 화면의 상단바와 하단 버튼

@@ -36,11 +36,11 @@ def db_connector():
 @bp.route('/', methods=['POST'])
 def analyze_eye():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+        return jsonify({'error': 'No file part', 'message': 'fail'})
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file', 'message': 'fail'})
 
     if file:
         # Create the 'uploads' directory if it doesn't exist
@@ -76,11 +76,11 @@ def analyze_eye():
             cursor.close()
             db_conn.close()
 
-            return jsonify({'result': predicted_category})
+            return jsonify({'result': predicted_category, 'message': 'success'})
 
         except Exception as e:
             print("Error storing result in the database:", e)
-            return jsonify({'error': 'Failed to store result in the database'})
+            return jsonify({'error': 'Failed to store result in the database', 'message': 'faill'})
 
 @bp.route('/<dogRegistNum>', methods=['GET'])
 def get_eye_result(dogRegistNum):

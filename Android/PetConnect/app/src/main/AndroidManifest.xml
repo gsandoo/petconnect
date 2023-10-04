@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature android:name="android.hardware.camera.any" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -24,59 +25,39 @@
         android:theme="@style/Theme.PetConnect"
         tools:targetApi="31">
         <activity
-            android:name=".CommunityDetailContentActivity"
+            android:name=".CheckSkinActivity"
             android:exported="false"
-            android:label="@string/title_activity_community_detail_content"
+            android:label="@string/title_activity_check_skin"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".CommunityWriteActivity"
+            android:name=".ShowHealthInfoActivity"
             android:exported="false"
-            android:label="@string/title_activity_community_write"
+            android:label="@string/title_activity_show_health_info"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".CommunityAcitivity"
+            android:name=".ShowResultActivity"
             android:exported="false"
-            android:label="@string/title_activity_community_acitivity"
+            android:label="@string/title_activity_show_result"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".SkinResultInfoActivity"
+            android:name=".models.Activity"
             android:exported="false"
-            android:label="@string/title_activity_skin_result_info"
+            android:label="@string/title_activity_"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".SkinSaveResultActivity"
+            android:name=".TakePictureActivity"
             android:exported="false"
-            android:label="@string/title_activity_skin_save_result"
+            android:label="@string/title_activity_take_pciture"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".EyeImagingResults"
+            android:name=".CheckEyeActivity"
             android:exported="false"
-            android:label="@string/title_activity_eye_imaging_results"
+            android:label="@string/title_activity_check_eye"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".SkinResultActivity"
+            android:name=".feedMeasurementActivity"
             android:exported="false"
-            android:label="@string/title_activity_skin_result"
-            android:theme="@style/Theme.PetConnect" />
-        <activity
-            android:name=".EyeSaveResultActivity"
-            android:exported="false"
-            android:label="@string/title_activity_eye_save_result"
-            android:theme="@style/Theme.PetConnect" />
-        <activity
-            android:name=".EyeSaveActivity"
-            android:exported="false"
-            android:label="@string/title_activity_eye_save"
-            android:theme="@style/Theme.PetConnect" />
-        <activity
-            android:name=".EyeResultInfoActivity"
-            android:exported="false"
-            android:label="@string/title_activity_eye_result_info"
-            android:theme="@style/Theme.PetConnect" />
-        <activity
-            android:name=".EyeResultActivity"
-            android:exported="false"
-            android:label="@string/title_activity_eye_result"
+            android:label="@string/title_activity_check_eye"
             android:theme="@style/Theme.PetConnect" />
         <activity
             android:name=".CheckResultActivity"
@@ -85,11 +66,6 @@
             android:theme="@style/Theme.PetConnect" />
         <activity
             android:name=".DogCheckActivity"
-            android:exported="false"
-            android:label="@string/title_activity_dog_check"
-            android:theme="@style/Theme.PetConnect" />
-        <activity
-            android:name=".fragment.DogCheckActivity"
             android:exported="false"
             android:label="@string/title_activity_dog_check"
             android:theme="@style/Theme.PetConnect" />
@@ -105,7 +81,8 @@
             android:theme="@style/Theme.PetConnect" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.PetConnect">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

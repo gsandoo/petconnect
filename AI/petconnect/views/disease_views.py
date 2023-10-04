@@ -5,16 +5,21 @@ from skimage.feature import hog
 import pickle
 import pymysql
 
+#path adjusting
+def get_path(path):
+    change_path = path.replace("\\",'/')
+    return change_path
+
+
 bp = Blueprint('disease', __name__, url_prefix='/disease')
 
-# 현재 파일의 디렉토리 경로
-current_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 # disease_model.pkl의 상대 경로 계산
-disease_model_path = os.path.join(current_dir, '..', '..', 'disease', 'SVM-Classifier', 'disease.pkl')
+path = '../disease/SVM-Classifier/disease_model.pkl'
+classify_path = get_path(os.path.abspath(path))
 
-# SVM 모델 로드
-with open(disease_model_path, 'rb') as model_file:
+with open(classify_path, 'rb') as model_file:
     svm_model = pickle.load(model_file)
 
 categories = ['atopy', 'hotspots', 'hair_loss', 'normal']

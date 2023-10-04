@@ -14,15 +14,10 @@
     <string name="title_activity_dog_info">DogInfoActivity</string>
     <string name="title_activity_dog_check">DogCheckActivity</string>
     <string name="title_activity_check_result">CheckResultActivity</string>
-    <string name="title_activity_eye_result">EyeResultActivity</string>
-    <string name="title_activity_eye_result_info">EyeResultInfoActivity</string>
-    <string name="title_activity_eye_save">EyeSaveActivity</string>
-    <string name="title_activity_eye_save_result">EyeSaveResultActivity</string>
-    <string name="title_activity_skin_result">SkinResultActivity</string>
-    <string name="title_activity_eye_imaging_results">EyeImagingResults</string>
-    <string name="title_activity_skin_save_result">SkinSaveResultActivity</string>
-    <string name="title_activity_skin_result_info">SkinResultInfoActivity</string>
-    <string name="title_activity_community_acitivity">CommunityAcitivity</string>
-    <string name="title_activity_community_write">CommunityWriteActivity</string>
-    <string name="title_activity_community_detail_content">CommunityDetailContentActivity</string>
+    <string name="title_activity_check_eye">CheckEyeActivity</string>
+    <string name="title_activity_take_pciture">TakePcitureActivity</string>
+    <string name="title_activity_">Activity</string>
+    <string name="title_activity_show_result">ShowResultActivity</string>
+    <string name="title_activity_show_health_info">ShowHealthInfoActivity</string>
+    <string name="title_activity_check_skin">CheckSkinActivity</string>
 </resources>

@@ -3,10 +3,12 @@ package com.haneum.petconnect.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.background
 import com.haneum.petconnect.MainActivity
 import androidx.compose.foundation.clickable
@@ -21,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.withConsumedWindowInsets
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -44,6 +45,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +66,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -70,6 +76,7 @@ import com.example.compose.AppTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.haneum.petconnect.DogCheckActivity
@@ -78,6 +85,14 @@ import com.haneum.petconnect.DogRegisterActivity
 import com.haneum.petconnect.Main
 import com.haneum.petconnect.R
 import com.haneum.petconnect.data.DogInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
+import java.lang.Exception
+import java.util.concurrent.Executors
 
 
 private const val ARG_PARAM1 = "param1"
@@ -89,7 +104,6 @@ class HomeFragment : Fragment() {
     private var param2: String? = null
     private var mActivity: MainActivity? = null
     private lateinit var mContext: Context
-    private lateinit var dogInfo: MutableList<DogInfo>
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
 
@@ -111,42 +125,27 @@ class HomeFragment : Fragment() {
     ): View? {
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!
-        dogInfo = mutableListOf(DogInfo())
-        var cnt: Int = 0
-        val db = Firebase.firestore
-//        db.collection("nose")
-//            .whereEqualTo("user_id", user.uid.toString())
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                for (doc in documents) {
-//                    dogInfo[cnt] = DogInfo(
-//                        dog_name = doc.data["dog_name"].toString(),
-//                        birth = doc.data["birth"].toString(),
-//                        profile_path = doc.data["profile_path"].toString(),
-//                        height = doc.data["height"].toString(),
-//                        weight = doc.data["weight"].toString(),
-//                        description = doc.data["description"].toString(),
-//                        breed = doc.data["breed"].toString(),
-//                        dog_sex = doc.data["dog_sex"].toString()
-//                    )
-//                    cnt++
-//                }
-//            }
-        dogInfo[0] = DogInfo(
-            dog_name = "포메",
-            birth = "2020",
-            profile_path = "https://firebasestorage.googleapis.com/v0/b/pet-connect-cdc02.appspot.com/o/dog.jpeg?alt=media&token=20aa134f-40cd-4902-8761-9d2143ce2925",
-            height = "100cm",
-            weight = "50kg",
-            description = "슐라슐라",
-            breed = "뽀메",
-            dog_sex = "남아",
-            dog_id = "11"
-        )
+        var data: MutableList<DogInfo> = mutableListOf(DogInfo())
 
         return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner
             // is destroyed
+            CoroutineScope(Dispatchers.IO).launch{
+                val documents = getData()
+                for ((cnt, doc) in documents.withIndex()){
+                    data[cnt] = DogInfo(
+                        dog_name = doc.data!!["dog_name"].toString(),
+                        birth = doc.data!!["birth"].toString(),
+                        profile_path = doc.data!!["profile_path"].toString(),
+                        height = doc.data!!["height"].toString(),
+                        weight = doc.data!!["weight"].toString(),
+                        description = doc.data!!["description"].toString(),
+                        breed = doc.data!!["breed"].toString(),
+                        dog_sex = doc.data!!["dog_sex"].toString()
+                    )
+                }
+                Log.d("debug",data[0].user_id)
+            }
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 AppTheme() {
@@ -160,8 +159,12 @@ class HomeFragment : Fragment() {
                         dogRegiClick = {
                             val intent = Intent(mContext, DogRegisterActivity::class.java)
                             startActivity(intent)
+                            activity?.supportFragmentManager
+                                ?.beginTransaction()
+                                ?.remove(this@HomeFragment)
+                                ?.commit()
                         },
-                        dogInfo = dogInfo,
+                        dogInfo = data,
                         noseCheck = {
                             val intent = Intent(mContext, DogCheckActivity::class.java)
                             startActivity(intent)
@@ -170,6 +173,15 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private suspend fun getData(): MutableList<DocumentSnapshot> {
+        val db = Firebase.firestore
+        return db.collection("nose")
+            .whereEqualTo("user_id", user.uid.toString())
+            .get()
+            .await()
+            .documents
     }
 
 
@@ -194,21 +206,6 @@ class HomeFragment : Fragment() {
     }
 }
 
-@Preview
-@Composable
-fun mainPreview(){
-    MainView(dogRegiClick = { /*TODO*/ }, dogInfoClick = { /*TODO*/ }, noseCheck = {}, dogInfo = listOf(
-        DogInfo(
-        dog_name = "포메",
-        birth = "2020",
-        profile_path = "https://firebasestorage.googleapis.com/v0/b/pet-connect-cdc02.appspot.com/o/dog.jpeg?alt=media&token=20aa134f-40cd-4902-8761-9d2143ce2925",
-        height = "100cm",
-        weight = "50kg",
-        description = "슐라슐라",
-        breed = "뽀메",
-        dog_sex = "남아"
-    )))
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -298,7 +295,9 @@ fun MainView(
                             DogProfileCard(
                                 modifier = Modifier.height(150.dp),
                                 listClick = { dogInfoClick(dogInfo[index]) },
-                                dogInfo = dogInfo[index])
+                                dogInfo = dogInfo[index],
+                                imageSize = 80.dp
+                                )
                         }
                     }
                     }
@@ -316,7 +315,7 @@ fun MainView(
                     IconCard(
                         btnClick = { noseCheck() },
                         icon = { Icon(
-                            painter = painterResource(id = R.drawable.location_check),
+                            painter = painterResource(id = R.drawable.ic_location_check),
                             contentDescription = "nav",
                             modifier = Modifier
                                 .width(24.dp)
@@ -337,7 +336,7 @@ fun MainView(
                     IconCard(
                         btnClick = {},
                         icon = { Icon(
-                            painter = painterResource(id = R.drawable.location_question),
+                            painter = painterResource(id = R.drawable.ic_location_question),
                             contentDescription = "nav",
                             modifier = Modifier
                                 .width(24.dp)
@@ -405,13 +404,15 @@ fun DogRegisterButton(
 fun DogProfileCard(
     modifier: Modifier = Modifier,
     listClick: () -> Unit,
-    dogInfo: DogInfo
+    dogInfo: DogInfo,
+    imageSize: Dp
 ){
+    var birth: String = "8"
     ElevatedCard(
         modifier = modifier
         ,
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp
+            defaultElevation = 2.dp
         )
         , colors = CardDefaults.elevatedCardColors(
             containerColor = Color.White
@@ -419,7 +420,7 @@ fun DogProfileCard(
         shape = RectangleShape
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .clickable { listClick() }
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -435,12 +436,12 @@ fun DogProfileCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .width(80.dp)
-                    .height(80.dp)
+                    .width(imageSize)
+                    .height(imageSize)
             )
             Spacer(modifier = Modifier.size(height = 10.dp, width = 1.dp))
             Text(
-                text = "${dogInfo.dog_name}(${2023 - dogInfo.birth.toInt()}세)",
+                text = "${dogInfo.dog_name}(${birth}세)",
                 style = TextStyle(
                     fontWeight = FontWeight(800),
                     fontSize = 18.sp
