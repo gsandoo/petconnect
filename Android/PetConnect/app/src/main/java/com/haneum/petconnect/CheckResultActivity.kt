@@ -1,14 +1,21 @@
 package com.haneum.petconnect
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -22,114 +29,79 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.compose.AppTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.haneum.petconnect.contracts.DogCheckContract
 import com.haneum.petconnect.data.DogInfo
 import com.haneum.petconnect.fragment.DogProfileCard
+import com.haneum.petconnect.models.DogCheckRepository
+import com.haneum.petconnect.presenters.DogCheckPresenter
+import com.haneum.petconnect.ui.theme.md_theme_dark_onPrimary
+import java.text.SimpleDateFormat
+import java.util.Date
 
-class CheckResultActivity : ComponentActivity() {
-    private lateinit var dogNum: String
+class CheckResultActivity : ComponentActivity(), DogCheckContract.View {
+    private lateinit var user: FirebaseUser
+    private lateinit var repository: DogCheckRepository
+    private lateinit var presenter: DogCheckPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        val db = Firebase.firestore
-        var dogInfo: DogInfo = DogInfo()
-        dogNum = intent.getStringExtra("dogNum").toString()
-        db.collection("nose")
-            .whereEqualTo("dog_num", dogNum)
-            .get()
-            .addOnSuccessListener { documents ->
-                for( doc in documents){
-                    dogInfo = DogInfo(
-                        dog_name = doc.data["dog_name"].toString(),
-                        birth = doc.data["birth"].toString(),
-                        profile_path = doc.data["profile_path"].toString(),
-                        breed = doc.data["breed"].toString(),
-                        dog_sex = doc.data["dog_sex"].toString()
-                    )
-                }
-                setContent {
-                    AppTheme() {
-                        // A surface container using the 'background' color from the theme
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background
-                        ) {
-                            CheckResultView(
-                                next = {finish()},
-                                back = {
-                                    val intent = Intent(this, DogCheckActivity::class.java)
-                                    startActivity(intent)
-                                },
-                                dogInfo = dogInfo
-                            )
-                        }
-                    }
-                }
-            }
+        val auth = Firebase.auth
+        val nose = intent.getStringExtra("fileUri")?.toUri()
+        user = auth.currentUser!!
+        repository = DogCheckRepository()
+        presenter = DogCheckPresenter(this@CheckResultActivity, repository)
+        setContent {
+            PendingScreen()
+        }
+        Toast.makeText(this, nose.toString(), Toast.LENGTH_SHORT).show()
+
+        imageUpload(nose!!, presenter)
+
         super.onCreate(savedInstanceState)
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CheckResultView(
-    modifier: Modifier = Modifier,
-    next: () -> Unit,
-    back: () -> Unit,
-    dogInfo: DogInfo
-    ) {
-    Scaffold(
-        topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(onClick = { back() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-            )
+    private fun imageUpload(nose: Uri, presenter: DogCheckPresenter){
+        val storage = FirebaseStorage.getInstance()
 
-        },
-        bottomBar = {
-            Button(
-                modifier = Modifier
-                    .background(color = Color(0xFF426CB4), shape = RoundedCornerShape(size = 32.dp))
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.8f),
-                onClick = next,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF426CB4),
-                    contentColor = Color.White
-                )
-            ){
-                Text(
-                    text = "확인",
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(700),
-                        textAlign = TextAlign.Center,
-                )
-                )
+        val fileName = SimpleDateFormat("yyyyMMddHHmmss").format(Date())+"_"+ user.uid
+
+        storage.reference.child("image").child(fileName).child("check")
+            .putFile(nose)
+            .addOnSuccessListener{
+                presenter.dogCheck(fileName)
             }
-        }
-    ) {
-        Surface(
-            modifier = Modifier
-                .padding(it)
-        ) {
-            DogProfileCard(listClick = {}, dogInfo = dogInfo)
-        }
+
+    }
+
+    override fun makeFailureMessage(reason: String) {
+        runOnUiThread { Toast.makeText(this, "실패", Toast.LENGTH_LONG).show() }
+        nextStep(result = "실패", dogId = "")
+    }
+
+    override fun nextStep(result: String, dogId: String) {
+        val intent = Intent(this, ShowResultActivity::class.java)
+        intent.putExtra("kind", "lookup")
+        intent.putExtra("result", result)
+        intent.putExtra("dogId", dogId)
+        startActivity(intent)
     }
 }
+
+

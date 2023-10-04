@@ -37,14 +37,6 @@ class MainActivity : AppCompatActivity() {
         myIntent = intent
 
 
-//        var userInfo = myIntent.getStringArrayExtra("userInfo")
-//        FirebaseAuth.getInstance().signInWithEmailAndPassword(userInfo?.get(0)!!, userInfo[1]!!).addOnCompleteListener{
-//            if(it.isSuccessful){
-//
-//            }else{
-//
-//            }
-//        }
 
         //기본 프라그먼트를 홈으로 설정
         supportFragmentManager.beginTransaction()
@@ -63,8 +55,6 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        //네비게이션 바 숨기기
-
     }
 
     fun setVisibility(type: Int){

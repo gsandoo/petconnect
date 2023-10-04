@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,6 +59,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toFile
 import com.example.compose.AppTheme
+import com.google.android.gms.tasks.Task
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.haneum.petconnect.service.NoseApi
@@ -65,6 +69,9 @@ import com.haneum.petconnect.service.NoseCheckRes
 import com.haneum.petconnect.service.NoseRegisterRes
 import com.haneum.petconnect.service.RetrofitSetting
 import com.haneum.petconnect.ui.bottomBorder
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -75,109 +82,34 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.annotation.Nullable
 
 class DogCheckActivity : ComponentActivity() {
     private lateinit var uri: Uri
-    private lateinit var service: NoseApi
     private lateinit var intent: Intent
+    private lateinit var context: Context
 
-    @OptIn(ExperimentalMaterial3Api::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val retrofit = RetrofitSetting.getInstance()
-        service = retrofit.create(NoseApi::class.java)
-        intent = Intent(this, CheckResultActivity::class.java)
+        context = this
+        intent = Intent(this, TakePictureActivity::class.java)
+        intent.putExtra("kind","lookup")
+        intent.putExtra("dogId","")
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
                 // A surface container using the 'background' color from the theme
                 DogCheck(
                     back = { finish() },
-                    getImage = { getImage() },
+                    getImage = {
+                        startActivity(intent)
+                        finish() },
                 )
             }
         }
-    }
-    private val registerForActivityResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            when (result.resultCode) {
-                AppCompatActivity.RESULT_OK -> {
-                    // 변수 uri에 전달 받은 이미지 uri를 넣어준다.
-                    uri = result.data?.data!!
-                    noseUpload(uri, service = service)
-                }
-            }
-        }
-    private fun getImage(){
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        registerForActivityResult.launch(intent)
-    }
-
-//    private fun imageUpload(uri: Uri) {
-//        // storage 인스턴스 생성
-//        val storage = Firebase.storage
-//        // storage 참조
-//        val storageRef = storage.getReference("image")
-//        // storage에 저장할 파일명 선언
-//        val fileName = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
-//        val mountainsRef = storageRef.child("${fileName}.png")
-//
-//        val uploadTask = mountainsRef.putFile(uri)
-//        uploadTask.addOnSuccessListener { taskSnapshot ->
-//            // 파일 업로드 성공
-//            Toast.makeText(getActivity(), "사진 업로드 성공", Toast.LENGTH_SHORT).show();
-//        }.addOnFailureListener {
-//            // 파일 업로드 실패
-//            Toast.makeText(getActivity(), "사진 업로드 실패", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-    private fun noseUpload(uri: Uri, service: NoseApi) {
-        service.getNoseCheck(
-            MultipartBody.Part.createFormData("dogNose","dogNose", File(absolutelyPath(this, uri))!!.asRequestBody("image/*".toMediaTypeOrNull()))
-        )?.enqueue(object : Callback<NoseCheckRes> {
-            override fun onResponse(call: Call<NoseCheckRes>, response: Response<NoseCheckRes>) {
-                if(response.isSuccessful){
-                    // 정상적으로 통신이 성고된 경우
-                    var result: NoseCheckRes? = response.body()
-                    Log.d("YMC", "onResponse 성공: " + result?.toString());
-                    intent.putExtra("dogNum",result?.data?.dogRegistNum)
-                    startActivity(intent)
-                }else{
-                    // 통신이 실패한 경우(응답코드 3xx, 4xx 등)
-                    Log.d("YMC", "onResponse 실패")
-                }
-            }
-            override fun onFailure(call: Call<NoseCheckRes>, t: Throwable) {
-                // 통신 실패 (인터넷 끊킴, 예외 발생 등 시스템적인 이유)
-                Log.d("YMC", "onFailure 에러: " + t.message.toString());
-                intent.putExtra("dogNum","hihi")
-                startActivity(intent)
-            }
-        })
-    }
-    @Nullable
-    fun absolutelyPath(context: Context, uri: Uri): String? {
-        val contentResolver: ContentResolver = context.contentResolver ?: return null
-
-        // 파일 경로를 만듬
-        val filePath: String = (context.applicationInfo.dataDir + File.separator
-                + System.currentTimeMillis())
-        val file = File(filePath)
-        try {
-            // 매개변수로 받은 uri 를 통해  이미지에 필요한 데이터를 불러 들인다.
-            val inputStream = contentResolver.openInputStream(uri) ?: return null
-            // 이미지 데이터를 다시 내보내면서 file 객체에  만들었던 경로를 이용한다.
-            val outputStream: OutputStream = FileOutputStream(file)
-            val buf = ByteArray(1024)
-            var len: Int
-            while (inputStream.read(buf).also { len = it } > 0) outputStream.write(buf, 0, len)
-            outputStream.close()
-            inputStream.close()
-        } catch (ignore: IOException) {
-            return null
-        }
-        return file.absolutePath
     }
 
 }
