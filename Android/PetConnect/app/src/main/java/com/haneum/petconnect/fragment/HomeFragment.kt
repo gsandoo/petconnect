@@ -316,7 +316,7 @@ fun MainView(
                     IconCard(
                         btnClick = { noseCheck() },
                         icon = { Icon(
-                            painter = painterResource(id = R.drawable.ic_location_check),
+                            painter = painterResource(id = R.drawable.location_check),
                             contentDescription = "nav",
                             modifier = Modifier
                                 .width(24.dp)
@@ -337,7 +337,7 @@ fun MainView(
                     IconCard(
                         btnClick = {},
                         icon = { Icon(
-                            painter = painterResource(id = R.drawable.ic_location_question),
+                            painter = painterResource(id = R.drawable.location_question),
                             contentDescription = "nav",
                             modifier = Modifier
                                 .width(24.dp)
