@@ -24,6 +24,21 @@
         android:theme="@style/Theme.PetConnect"
         tools:targetApi="31">
         <activity
+            android:name=".CommunityDetailContentActivity"
+            android:exported="false"
+            android:label="@string/title_activity_community_detail_content"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".CommunityWriteActivity"
+            android:exported="false"
+            android:label="@string/title_activity_community_write"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".CommunityAcitivity"
+            android:exported="false"
+            android:label="@string/title_activity_community_acitivity"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
             android:name=".SkinResultInfoActivity"
             android:exported="false"
             android:label="@string/title_activity_skin_result_info"

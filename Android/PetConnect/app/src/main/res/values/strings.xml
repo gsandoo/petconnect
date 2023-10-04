@@ -22,4 +22,7 @@
     <string name="title_activity_eye_imaging_results">EyeImagingResults</string>
     <string name="title_activity_skin_save_result">SkinSaveResultActivity</string>
     <string name="title_activity_skin_result_info">SkinResultInfoActivity</string>
+    <string name="title_activity_community_acitivity">CommunityAcitivity</string>
+    <string name="title_activity_community_write">CommunityWriteActivity</string>
+    <string name="title_activity_community_detail_content">CommunityDetailContentActivity</string>
 </resources>
