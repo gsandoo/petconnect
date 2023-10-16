@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -30,7 +29,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -69,20 +67,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.haneum.petconnect.CheckEyeActivity
-import com.haneum.petconnect.DogCheckActivity
-import com.haneum.petconnect.DogInfoActivity
-import com.haneum.petconnect.DogRegisterActivity
 import com.haneum.petconnect.MainActivity
 import com.haneum.petconnect.R
-import com.haneum.petconnect.TakePictureActivity
+import com.haneum.petconnect.ui.TakePictureActivity
 import com.haneum.petconnect.contracts.HealthContract
 import com.haneum.petconnect.data.Disease
-import com.haneum.petconnect.data.DogInfo
 import com.haneum.petconnect.data.Eye
-import com.haneum.petconnect.feedMeasurementActivity
 import com.haneum.petconnect.models.HealthRepository
 import com.haneum.petconnect.presenters.HealthPresenter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -185,7 +179,6 @@ class HealthFragment : Fragment(), HealthContract.View {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthScreen(
     modifier: Modifier = Modifier,
@@ -195,8 +188,7 @@ fun HealthScreen(
         Surface(
             modifier = Modifier.padding(it)
         ) {
-
-            health_record(modifier = Modifier, goCheck = goCheck)
+            health_record(modifier = Modifier, goCheck = goCheck, dogList = listOf())
         }
     }
 }
@@ -487,8 +479,9 @@ fun Demo_ExposedDropdownMenuBox(mypets: List<String>) {
 @Composable
 fun health_record(
     modifier: Modifier,
-    goCheck: (String) -> Unit
-    ) {
+    goCheck: (String) -> Unit,
+    dogList: List<String>
+) {
     Scaffold(
         topBar = {
             TopAppBar7(
@@ -509,6 +502,7 @@ fun health_record(
                 Box(modifier=Modifier)
                 {
                     Row{
+
                         val myPets = listOf("아토", "별", "Espresso")
                         Demo_ExposedDropdownMenuBox(mypets = myPets)
 

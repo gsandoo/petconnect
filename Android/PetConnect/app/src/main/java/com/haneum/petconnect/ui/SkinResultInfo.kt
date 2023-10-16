@@ -1,8 +1,5 @@
-package com.haneum.petconnect
+package com.haneum.petconnect.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +17,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,32 +28,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.example.compose.AppTheme
-
-class EyeResultInfoActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CodePreview()
-                }
-            }
-        }
-    }
-}
+import com.haneum.petconnect.R
 
 
 @Composable
-fun item(modifier: Modifier, itemNumber: Int, itemText: String){
+fun itemSkin(modifier: Modifier, itemNumber: Int, itemText: String){
     Row(){
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(2.dp)){
             Box(
@@ -74,7 +49,8 @@ fun item(modifier: Modifier, itemNumber: Int, itemText: String){
                 lineHeight = 1.41.em,
                 style = TextStyle(
                     fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold))
+                    fontWeight = FontWeight.Bold)
+            )
             modifier.padding(2.dp)
         }
 
@@ -83,7 +59,8 @@ fun item(modifier: Modifier, itemNumber: Int, itemText: String){
             color = Color.DarkGray,
             lineHeight = 1.29.em,
             style = TextStyle(
-                fontSize = 14.sp))
+                fontSize = 14.sp)
+        )
     }
 
 }
@@ -91,7 +68,7 @@ fun item(modifier: Modifier, itemNumber: Int, itemText: String){
 
 //증상 설명
 @Composable
-fun cataract_symptoms(modifier: Modifier=Modifier,
+fun Skin_symptoms(modifier: Modifier=Modifier,
                       diseaseName: String = "백내장" ){
     Column (modifier=Modifier.padding(10.dp, bottom = 30.dp)){
         Text(
@@ -105,27 +82,28 @@ fun cataract_symptoms(modifier: Modifier=Modifier,
             modifier = Modifier
         )
         Column {
-            item(
+            itemSkin(
                 modifier = Modifier,
                 itemNumber = 1,
                 itemText = "눈을 자주 문지름"
             )
 
-            item(
+            itemSkin(
                 modifier = Modifier,
                 itemNumber = 2,
                 itemText = "다양한 과일 섭취"
             )
         }
 
-    }}
+    }
+}
 
 @Composable
-fun contentContext(
+fun contentContextSkin(
     modifier: Modifier=Modifier,
     diseaseCause: String,
     dogDescription: String,
-    diseaseName: String = "백내장"
+    diseaseName: String = "탈모"
 ) {
     Column(modifier=Modifier.padding(10.dp, bottom = 30.dp)){
         Text(
@@ -167,10 +145,8 @@ fun contentContext(
 
 }
 
-
-
 @Composable
-fun toplogo( modifier: Modifier = Modifier,
+fun toplogoSkin( modifier: Modifier = Modifier,
              diseaseName: String,
              diseaseDescription: String) {
     Box(
@@ -191,7 +167,7 @@ fun toplogo( modifier: Modifier = Modifier,
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.eye_icon),
+                painter = painterResource(id = R.drawable.skin_icon),
                 contentDescription = "Vector 490",
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
@@ -245,14 +221,15 @@ fun toplogo( modifier: Modifier = Modifier,
                     lineHeight = 1.41.em,
                     style = TextStyle(
                         fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold))
+                        fontWeight = FontWeight.Bold)
+                )
             }
 
         }
     }
 }
 @Composable
-fun logoCode(modifier: Modifier = Modifier) {
+fun logoCodeSkin(modifier: Modifier = Modifier) {
     Box(modifier = modifier
         .fillMaxWidth(),  contentAlignment = Alignment.Center){
         Box(
@@ -304,7 +281,8 @@ fun logoCode(modifier: Modifier = Modifier) {
                     lineHeight = 1.29.em,
                     style = TextStyle(
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold))
+                        fontWeight = FontWeight.Bold)
+                )
                 Box(
                     modifier = Modifier
                         .requiredWidth(width = 10.dp)
@@ -399,47 +377,68 @@ fun logoCode(modifier: Modifier = Modifier) {
     }
 
 }
-// 백내장의 경우
+
+
+// 탈모의 경우
 @Composable
-fun CataractCode(modifier: Modifier){
-    Column {
-        TopAppBarDisease()
+fun HairlossCode(modifier: Modifier){
         Column(modifier = modifier.fillMaxSize()) {
-            toplogo(
+            toplogoSkin(
                 modifier = Modifier.padding(bottom = 10.dp),
-                diseaseName = "백내장",
+                diseaseName = "핫스팟 피부염",
                 diseaseDescription = "투명하게 눈의 건강을 유지하고 있는\n유성체가 혼탁해져서 뿌옇게 변색하여\n결국 빛이 통과되지 못하여 시력이 낮아지는 질병"
             )
             Box() {
                 Column {
-                    cataract_symptoms(modifier = Modifier.padding(bottom = 30.dp))
-                    contentContext(
+                    Skin_symptoms(modifier = Modifier.padding(bottom = 30.dp))
+                    contentContextSkin(
                         modifier = Modifier.padding(bottom = 50.dp),
-                        diseaseCause = "주요 원인으로는 유전적인 영향과 노화현상이 대표적이고, 질병에 걸렸거나 체내 영양소가 부족할 경우에 생겨요",
-                        dogDescription = "강아지는 후각과 청각이 뛰어나 주변 환경이 어떤지 판단할 수 있어요 따라서 익숙한 곳에서는 별탈없이 지내는 경우도 많아요😢\n\n가구나 물건의 위치를 기억하기 때문에 후각과 청각을 이용해서 해당 자리에 무엇이 있었는지 파악할 수 있기 때문이죠\n\n그렇기 때문에 강아지가 시력이 점점 안좋아진다면 가구 위치를 바꾸는 것은 강아지에게 혼란을 줄 수 있어요\n\n원형 반경안에서 다른 물체에 부딪히지 않도록 보호할 수 있는 원형틀 보조기구도 있어요 만약 시력이 안좋아져서 힘들어한다면 기구를 이용하는 것도 추천해요"
-                    )
+                        diseaseName = "핫스팟 피부염",
+                        diseaseCause = "가장 많은 이유는 음식이나 환경으로 인한 알레르기성이고 이외에도 벌레물림이나 외부 기생충 화상 또는 화학물질 같은 자극으로 인해 발생해요\n특히 여름철,장마같은 습한 환경에 발병률이 높아서 주의해야해요",
+                        dogDescription = "강아지 혀 아래에 주사를 매주 맞거나 몇방울 떨어트리는 방식의 면역요법으로 관리를 하기도 하고,\n\n정기적인 목욕과 외출 후 발을 닦는 것이 핫스팟 피부염 예방에 도움이 될거에요\n\n핫스팟피부염이 발생하면 우선 피부 주변의 털을 조심스럽게 면도하여 깨끗하고 통풍이 잘되는 상태를 유지하는 것이 중요해요\n강아지가 환부를 물거나 핥지 않기위해 발톱정리, 넥카타 착용을 권합니다 ! "    )
                 }
             }
-            logoCode(modifier = Modifier)
+            logoCodeSkin(modifier = Modifier)
 
         }
-    }
 }
 
-// 체리아이의 경우
+// 핫스팟 피부염의 경우
 @Composable
-fun CherryeyeCode(modifier: Modifier){
-    Column {
-        TopAppBarDisease()
+fun HotspotCode(modifier: Modifier){
+        Column(modifier = modifier.fillMaxSize()) {
+            toplogoSkin(
+                modifier = Modifier.padding(bottom = 10.dp),
+                diseaseName = "핫스팟 피부염",
+                diseaseDescription = "투명하게 눈의 건강을 유지하고 있는\n유성체가 혼탁해져서 뿌옇게 변색하여\n결국 빛이 통과되지 못하여 시력이 낮아지는 질병"
+            )
+            Box() {
+                Column {
+                    Skin_symptoms(modifier = Modifier.padding(bottom = 30.dp))
+                    contentContextSkin(
+                        modifier = Modifier.padding(bottom = 50.dp),
+                        diseaseName = "핫스팟 피부염",
+                        diseaseCause = "가장 많은 이유는 음식이나 환경으로 인한 알레르기성이고 이외에도 벌레물림이나 외부 기생충 화상 또는 화학물질 같은 자극으로 인해 발생해요\n특히 여름철,장마같은 습한 환경에 발병률이 높아서 주의해야해요",
+                        dogDescription = "강아지 혀 아래에 주사를 매주 맞거나 몇방울 떨어트리는 방식의 면역요법으로 관리를 하기도 하고,\n\n정기적인 목욕과 외출 후 발을 닦는 것이 핫스팟 피부염 예방에 도움이 될거에요\n\n핫스팟피부염이 발생하면 우선 피부 주변의 털을 조심스럽게 면도하여 깨끗하고 통풍이 잘되는 상태를 유지하는 것이 중요해요\n강아지가 환부를 물거나 핥지 않기위해 발톱정리, 넥카타 착용을 권합니다 ! "    )
+                }
+            }
+            logoCodeSkin(modifier = Modifier)
+
+        }
+}
+
+// 아토피의 경우
+@Composable
+fun AtopiCode(modifier: Modifier){
         Column(modifier = modifier.fillMaxSize()){
-            toplogo(
+            toplogoSkin(
                 modifier = Modifier.padding(bottom=10.dp),
                 diseaseName = "체리아이",
                 diseaseDescription = "투사람에게는 없는 제3안검이라는 조직의\n 안쪽에 있는 샘이 겉으로 튀어나오는 현상"    )
             Box(){
                 Column {
-                    cataract_symptoms(diseaseName = "체리아이",modifier=Modifier)
-                    contentContext(
+                    Skin_symptoms(diseaseName = "체리아이",modifier=Modifier)
+                    contentContextSkin(
                         modifier = Modifier,
                         diseaseName = "체리아이",
                         diseaseCause = "제 3안검에 염증이 생겼거나, 유전적으로 제 3안검의 주위 조직이 느슨해지면서 제 3안검이 제자리에 있지 못하고 눈의 안쪽에 튀어나오면서 생겨요",
@@ -449,12 +448,4 @@ fun CherryeyeCode(modifier: Modifier){
             }
             logoCode(modifier=Modifier)
         }
-
-
-    }
-}
-@Preview
-@Composable
-fun CodePreview(){
-    CherryeyeCode(modifier = Modifier)
 }

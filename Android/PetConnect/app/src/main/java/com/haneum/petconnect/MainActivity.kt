@@ -14,12 +14,13 @@ import com.haneum.petconnect.fragment.HealthFragment
 import com.haneum.petconnect.fragment.HomeFragment
 import com.haneum.petconnect.fragment.HospitalFragment
 import com.haneum.petconnect.fragment.ProfileFragment
+import com.haneum.petconnect.fragment.UsedTradeFragment
 import com.haneum.petconnect.fragment.WritePostFragment
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var homeFragment: HomeFragment
-    lateinit var hospitalFragment: HospitalFragment
+    lateinit var usedTradeFragment: UsedTradeFragment
     lateinit var communityFragment: CommunityFragment
     lateinit var healthFragment: HealthFragment
     lateinit var profileFragment: ProfileFragment
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         homeFragment = HomeFragment()
-        hospitalFragment = HospitalFragment()
+        usedTradeFragment = UsedTradeFragment()
         communityFragment = CommunityFragment()
         healthFragment = HealthFragment()
         profileFragment = ProfileFragment()
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         navigationBarView.setOnItemSelectedListener {item: MenuItem ->
             when(item.itemId){
                 R.id.home -> changeFragment(homeFragment)
-                R.id.hospital -> changeFragment(hospitalFragment)
+                R.id.hospital -> changeFragment(usedTradeFragment)
                 R.id.community -> changeFragment(communityFragment)
                 R.id.health -> changeFragment(healthFragment)
                 R.id.profile -> changeFragment(profileFragment)

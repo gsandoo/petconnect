@@ -371,9 +371,10 @@ fun SelectImageContent(
                 nameState = textValue
                 onNameChange(textValue) },
             placeholder = {Text("이름을 입력해주세요")},
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.White,
-                textColor = Color(0xFF426CB4),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
             ),
             singleLine = true,
             textStyle = TextStyle(fontSize = 18.sp, color = Color(0xFF426CB4))

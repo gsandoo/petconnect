@@ -1,4 +1,4 @@
-package com.haneum.petconnect
+package com.haneum.petconnect.ui
 
 
 
@@ -19,7 +19,10 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
+import com.haneum.petconnect.CheckEyeActivity
+import com.haneum.petconnect.CheckResultActivity
+import com.haneum.petconnect.CheckSkinActivity
+import com.haneum.petconnect.R
 import com.haneum.petconnect.databinding.ActivityTakePictureBinding
 import java.io.File
 import java.util.*

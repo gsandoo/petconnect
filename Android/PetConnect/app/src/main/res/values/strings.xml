@@ -20,4 +20,6 @@
     <string name="title_activity_show_result">ShowResultActivity</string>
     <string name="title_activity_show_health_info">ShowHealthInfoActivity</string>
     <string name="title_activity_check_skin">CheckSkinActivity</string>
+    <string name="title_activity_post_detail">PostDetailActivity</string>
+    <string name="title_activity_write_used_trade_post">WriteUsedTradePostActivity</string>
 </resources>

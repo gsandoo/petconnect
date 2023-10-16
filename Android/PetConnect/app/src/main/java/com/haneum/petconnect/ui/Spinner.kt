@@ -1,6 +1,7 @@
 package com.haneum.petconnect.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
@@ -26,34 +27,38 @@ fun <T> Spinner(
     items: List<T>,
     selectedItem: T,
     onItemSelected: (T) -> Unit,
-    selectedItemFactory: @Composable (Modifier, T) -> Unit,
+    selectedItemFactory: @Composable (Modifier, T, Boolean) -> Unit,
     dropdownItemFactory: @Composable (T, Int) -> Unit,
 ) {
     var expanded: Boolean by remember { mutableStateOf(false) }
+    var isSelected: Boolean by remember { mutableStateOf(false) }
 
     AppTheme() {
         Surface(
             color = Color.White,
-            border = BorderStroke(1.dp, Color.Blue),
+            border = BorderStroke(1.dp, Color.LightGray),
             shape = shapes.medium,
-            modifier = modifier.wrapContentSize(Alignment.TopStart)) {
+            modifier = modifier.wrapContentSize(Alignment.TopStart)
+        ) {
             selectedItemFactory(
                 Modifier
                     .clickable { expanded = true },
-                selectedItem
+                selectedItem,
+                isSelected
             )
 
             androidx.compose.material3.DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = dropDownModifier
+                modifier = dropDownModifier.background(color = Color.White)
             ) {
                 items.forEachIndexed { index, element ->
                     DropdownMenuItem(
-                        text = {Text(element.toString())}
+                        text = {Text(text = element.toString())}
                         ,onClick = {
                             onItemSelected(items[index])
                             expanded = false
+                            isSelected = true
                         })
                 }
             }

@@ -1,8 +1,5 @@
-package com.haneum.petconnect
+package com.haneum.petconnect.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,24 +7,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,33 +31,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.example.compose.AppTheme
+import com.haneum.petconnect.R
 
-class EyeImagingResults : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun Greeting( modifier: Modifier = Modifier) {
-    Column {
-        TopAppBarDisease()
+fun EyeInfoScreen(
+    modifier: Modifier = Modifier,
+    clickPanel: () -> Unit,
+    diseaseName: String,
+    dogName: String,
+    retry: () -> Unit,
+    save: () -> Unit
+) {
         Column(
             modifier = Modifier
                 .padding(20.dp)
@@ -94,7 +75,7 @@ fun Greeting( modifier: Modifier = Modifier) {
             }
             Box(modifier = Modifier.padding(5.dp)) {
                 // Pass the desired text here
-                GeneratedCode(nameText = "아토")
+                GeneratedCode(nameText = dogName)
             }
 
 
@@ -110,8 +91,7 @@ fun Greeting( modifier: Modifier = Modifier) {
             )
 
 
-            diseasePanel(diseaseName = "백내장", percentage = "00")
-            diseasePanel(diseaseName = "체리아이",percentage = "00")
+            diseasePanel(diseaseName = diseaseName, percentage = "00", clickPanel = clickPanel)
 
             Box(modifier = modifier
                 .fillMaxWidth(),
@@ -120,20 +100,18 @@ fun Greeting( modifier: Modifier = Modifier) {
                     RoundButton(
                         text = "다시하기",
                         modifier = Modifier,
-                        onClick = { /* 클릭 핸들러 로직을 여기에 추가*/ }
+                        onClick = { retry() }
                     )
                     RoundButton(
                         text = "저장하기",
                         modifier = Modifier,
-                        onClick = { /* 클릭 핸들러 로직을 여기에 추가 */ }
+                        onClick = { save() }
                     )
 
                 }
 
             }
         }
-    }
-
 }
 
 @Composable
@@ -178,7 +156,8 @@ fun RoundButton(
 fun diseasePanel(
     modifier: Modifier = Modifier,
     diseaseName: String,
-    percentage:String
+    percentage:String,
+    clickPanel: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -251,7 +230,7 @@ fun diseasePanel(
                 containerColor = Color.White
             ),
             selected = true,
-            onClick = { },
+            onClick = { clickPanel() },
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 246.dp, y = 14.dp)
@@ -259,28 +238,6 @@ fun diseasePanel(
     }
 }
 
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun TopAppBarDisease(modifier: Modifier = Modifier) {
-    androidx.compose.material3.TopAppBar(
-        title = {
-            Box(
-                modifier = Modifier
-                    .requiredSize(size = 24.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(36.dp),
-                    painter = painterResource(id = R.drawable.ic_arrow_back),
-                    contentDescription = "ic_arrow_back",
-                    tint = Color(0xff191c1b)
-                )
-
-            }
-        },
-
-        modifier = modifier
-    )
-}
 @Composable
 fun GeneratedCode(
     modifier: Modifier = Modifier,
@@ -334,13 +291,4 @@ fun GeneratedCode(
             modifier = Modifier.offset(x = 17.dp, y = 62.dp)
         )
     }
-}
-
-@Preview
-@Composable
-fun DiseaseCodePreview(){
-
-    Greeting()
-
-
 }

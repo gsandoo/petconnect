@@ -25,6 +25,16 @@
         android:theme="@style/Theme.PetConnect"
         tools:targetApi="31">
         <activity
+            android:name=".WriteUsedTradePostActivity"
+            android:exported="false"
+            android:label="@string/title_activity_write_used_trade_post"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
+            android:name=".PostDetailActivity"
+            android:exported="false"
+            android:label="@string/title_activity_post_detail"
+            android:theme="@style/Theme.PetConnect" />
+        <activity
             android:name=".CheckSkinActivity"
             android:exported="false"
             android:label="@string/title_activity_check_skin"
@@ -45,7 +55,7 @@
             android:label="@string/title_activity_"
             android:theme="@style/Theme.PetConnect" />
         <activity
-            android:name=".TakePictureActivity"
+            android:name=".ui.TakePictureActivity"
             android:exported="false"
             android:label="@string/title_activity_take_pciture"
             android:theme="@style/Theme.PetConnect" />

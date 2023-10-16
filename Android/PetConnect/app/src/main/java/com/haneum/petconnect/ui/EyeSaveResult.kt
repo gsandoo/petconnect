@@ -1,30 +1,20 @@
 @file:JvmName("EyeResultActivityKt")
 
-package com.haneum.petconnect
+package com.haneum.petconnect.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,62 +27,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.compose.AppTheme
-
-class EyeSaveResultActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting3()
-                }
-            }
-        }
-    }
-}
+import com.haneum.petconnect.R
 
 @Composable
-fun Greeting3( modifier: Modifier = Modifier) {
-    Column {
-        TopAppBarDisease2()
-        GeneratedCode()
-    }
-
-
-
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun TopAppBarDisease2(modifier: Modifier = Modifier) {
-    androidx.compose.material3.TopAppBar(
-        title = {
-            Box(
-                modifier = Modifier
-                    .requiredSize(size = 24.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(36.dp),
-                    painter = painterResource(id = R.drawable.ic_arrow_back),
-                    contentDescription = "ic_arrow_back",
-                    tint = Color(0xff191c1b))
-
-            }
-        },
-
-        modifier = modifier
-    )
-}
-@Composable
-fun GeneratedCode(modifier: Modifier = Modifier) {
+fun SavedScreen(modifier: Modifier = Modifier, name: String) {
     Box(
         modifier = modifier
             .requiredWidth(width = 360.dp)
@@ -118,7 +58,7 @@ fun GeneratedCode(modifier: Modifier = Modifier) {
                 ) {append("저장했어요.\n\n")}
                 withStyle(style = SpanStyle(
                     color = Color.DarkGray,
-                    fontSize = 18.sp)) {append("기록은 눈 촬영 기록에서\n언제든 확인할 수 있어요")}},
+                    fontSize = 18.sp)) {append("기록은 "+name+"촬영 기록에서\n언제든 확인할 수 있어요")}},
             modifier = Modifier
                 .align(alignment = Alignment.TopCenter)
                 .offset(
@@ -298,14 +238,5 @@ fun GeneratedCode(modifier: Modifier = Modifier) {
                         shape = RoundedCornerShape(5.dp)
                     ))
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    AppTheme {
-        Greeting3()
     }
 }
