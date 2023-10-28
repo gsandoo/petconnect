@@ -95,7 +95,7 @@ fun TopAppBar7(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun riceiconCode(modifier: Modifier = Modifier) {
+fun peepooiconCode(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .requiredWidth(width = 327.dp)
@@ -148,7 +148,7 @@ fun riceiconCode(modifier: Modifier = Modifier) {
                     .requiredHeight(height = 58.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.rice_icon),
+                    painter = painterResource(id = R.drawable.peepoo),
                     contentDescription = "Rectangle 6667355",
                     modifier = Modifier
                         .requiredWidth(width = 159.dp)
@@ -213,7 +213,7 @@ fun eyeCode(modifier: Modifier = Modifier) {
                     .offset(
                         x = 5.48046875.dp,
 
-                    )
+                        )
                     .requiredWidth(width = 120.dp)
                     .requiredHeight(height = 80.dp)
             )
@@ -373,12 +373,11 @@ fun health_record(modifier: Modifier) {
                 }
             }
 
-            Box(modifier=Modifier
-                .offset(x=15.dp, y=0.dp)
+            Box(modifier= Modifier
+                .offset(x = 15.dp, y = 0.dp)
                 .padding(20.dp)){
                 Column ( verticalArrangement = Arrangement.Center,) {
-                    riceiconCode(
-                    )
+                    peepooiconCode()
 
                     Row (modifier=Modifier
                         .padding(6.dp)

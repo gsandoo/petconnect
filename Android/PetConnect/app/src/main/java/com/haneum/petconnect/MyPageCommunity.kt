@@ -50,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +60,7 @@ import androidx.compose.ui.unit.sp
 import com.example.compose.AppTheme
 
 
-class CommunityAcitivity : ComponentActivity() {
+class MyPageCommunityAcitivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -77,7 +78,7 @@ class CommunityAcitivity : ComponentActivity() {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownMenuBox(arrs: List<String>) {
+fun DropdownMenuBox3(arrs: List<String>) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(arrs[0]) }
@@ -128,35 +129,32 @@ fun DropdownMenuBox(arrs: List<String>) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun TopAppBarCommunity(modifier: Modifier = Modifier) {
+fun TopAppBarCommunity3(modifier: Modifier = Modifier) {
     androidx.compose.material3.TopAppBar(
         title = {
             Text(
-                text = "커뮤니티",
-                color = Color(0xff426cb4),
+                text = "내가 쓴 글",
+                color = Color.Black, // 검은색 텍스트
                 lineHeight = 1.4.em,
                 style = TextStyle(
-                    fontSize = 20.sp)
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold // 굵은 글씨
+                )
             )
+
         },
         actions = {
             Box(
                 modifier = Modifier
                     .requiredSize(size = 24.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.search_black),
-                    contentDescription = "search_black_24dp 1",
-                    modifier = Modifier
-                        .requiredSize(size = 24.dp))
             }
         },
         modifier = modifier)
 
 }
-
 @Composable
-fun Frame(modifier: Modifier = Modifier, category:String, content:String, command_num:String, heart_num:String) {
+fun Frame3(modifier: Modifier = Modifier, category:String, content:String, command_num:String, heart_num:String) {
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp, Alignment.Top),
         modifier = modifier
@@ -295,10 +293,10 @@ fun Frame(modifier: Modifier = Modifier, category:String, content:String, comman
 }
 @Preview
 @Composable
-private fun TopAppBarPreview() {
+private fun TopAppBarMyPagePreview() {
     Column {
         val array1 = listOf("최신순")
-        TopAppBarCommunity()
+        TopAppBarCommunity3()
 
             Box(modifier = Modifier .fillMaxWidth() .height(50.dp)){
                 Row(){
@@ -324,7 +322,7 @@ private fun TopAppBarPreview() {
                 }
             }
 
-        Frame(
+        Frame3(
             modifier = Modifier.fillMaxWidth(), // 여기에 원하는 Modifier를 설정하세요.
             category = "고민있어요",
             content = "text = \"저희집 강아지는 말티즈이고 3살 입니다.\n" +
@@ -334,7 +332,7 @@ private fun TopAppBarPreview() {
             heart_num = "42" // 좋아요 수를 원하는 값으로 설정하세요.
         )
 
-        Frame(
+        Frame3(
             modifier = Modifier.fillMaxWidth(), // 여기에 원하는 Modifier를 설정하세요.
             category = "고민있어요",
             content = "text = \"저희집 강아지는 말티즈이고 3살 입니다.\n" +
@@ -343,7 +341,7 @@ private fun TopAppBarPreview() {
             command_num = "10", // 명령 번호를 원하는 값으로 설정하세요.
             heart_num = "42" // 좋아요 수를 원하는 값으로 설정하세요.
         )
-        Frame(
+        Frame3(
             modifier = Modifier.fillMaxWidth(), // 여기에 원하는 Modifier를 설정하세요.
             category = "고민있어요",
             content = "text = \"저희집 강아지는 말티즈이고 3살 입니다.\n" +
