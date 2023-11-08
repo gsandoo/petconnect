@@ -6,7 +6,7 @@
 |이름|학교|역할|
 |----|---|---|
 |[나현지 (팀장)](dev.hyeonji@gmail.com)|동덕여자대학교|Backend, AI|
-|[강산아](https://github.com/gsandoo)|동국대학교|Backend, AI|
+|[강산아](https://github.com/gsandoo)|동국대학교|Backend, AI , Infra|
 |[유수빈](yusubin288@gmail.com)|강남대학교|Android, Server|
 |[전지환](wlghks1599@gmail.com)|경기대학교|Android, Blockchain|
 |[홍수빈]()|성신여자대학교|Designer|
