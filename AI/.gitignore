@@ -125,9 +125,9 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
+.venvai
 env/
-venv/
+venvai/
 ENV/
 env.bak/
 venv.bak/
@@ -187,14 +187,3 @@ pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv
 
-#pem
-pet-connect-my-key.pem
-pet-connect-my-key.ppk
-
-#Dog-Data
-test
-train
-rawimage
-testimage
-image
-img
